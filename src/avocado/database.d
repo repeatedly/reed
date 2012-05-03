@@ -110,6 +110,38 @@ class Database
 
 class Collection
 {
+  public:
+    static struct Property
+    {
+        long journalSize;
+        bool waitForSync;
+    }
+
+    static struct Figure
+    {
+        static struct Alive
+        {
+            long count;
+            long size;
+        }
+
+        static struct Dead
+        {
+            long count;
+            long size;
+            long deletion;
+        }
+
+        static struct DataFiles
+        {
+            long count;
+        }
+
+        Alive alive;
+        Dead dead;
+        DataFiles dataFiles;
+    }
+
   private:
     Database database_;
     string name_;
@@ -129,9 +161,16 @@ class Collection
             status_ = info.object["status"].integer.to!uint();
     }
 
-    @property
+    @property @trusted
     {
-        string name() const
+        @safe
+        nothrow ulong id() const
+        {
+            return id_;
+        }
+
+        @safe
+        nothrow string name() const
         {
             return name_;
         }
@@ -145,37 +184,76 @@ class Collection
             name_ = newName;
         }
 
-        ulong id() const
-        {
-            return id_;
-        }
-
         size_t length() const
         {
             const request = Connection.Request(REST.GET, buildOwnPath("count"));
             const response = database_.sendRequest(request);
 
-            return response.object["count"].integer;
+            return cast(size_t)response.object["count"].integer;
         }
 
-        /**
-           Property property() const
-           {
-               return Property.init;
-           }
+        void waitForSync(bool newWaitForSync)
+        {
+            const jsonified = ["waitForSync": newWaitForSync].toJSONValue;
+            const request = Connection.Request(REST.PUT, buildOwnPath("properties"), toJSON(&jsonified));
+            database_.sendRequest(request);
+        }
 
-           void property(Property newProperty)
-           {
+        Property property() const
+        {
+            const request = Connection.Request(REST.GET, buildOwnPath("properties"));
+            const response = database_.sendRequest(request);
 
-           }
+            return fromJSONValue!Property(response);
+        }
 
-           Figure figure() const
-           {
-               return Figure.init;
-           }
-         */
+        Figure figure() const
+        {
+            const request = Connection.Request(REST.GET, buildOwnPath("figures"));
+            const response = database_.sendRequest(request);
+
+            std.stdio.writeln(toJSON(&response));
+            return fromJSONValue!Figure(response.object["figures"]);
+        }
     }
 
+    @property @safe nothrow const
+    {
+        /**
+         * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionReading
+         */
+        bool isNewBorned()
+        {
+            return status_ == 1;
+        }
+
+        bool isUnloaded()
+        {
+            return status_ == 2;
+        }
+
+        bool isLoaded()
+        {
+            return status_ == 3;
+        }
+
+        bool isBeginUnloaded()
+        {
+            return status_ == 4;
+        }
+
+        bool isDeleted()
+        {
+            return status_ == 5;
+        }
+
+        bool isCorrupted()
+        {
+            return status_ > 5;
+        }
+    }
+
+    @trusted
     void truncate()
     {
         const request = Connection.Request(REST.PUT, buildOwnPath("truncate"));
@@ -227,7 +305,7 @@ class Connection
             break;
         case REST.DELETE:
             response = "{}".dup;
-            del(uri); // TODO: std.net.curl.del has some issues.
+            del(uri); // TODO: See issue 8025 http://d.puremagic.com/issues/show_bug.cgi?id=8025
             break;
         }
 
