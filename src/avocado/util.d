@@ -2,16 +2,17 @@
 
 module avocado.util;
 
-import std.conv;
+import std.array     : array;
+import std.algorithm : map;
+import std.conv      : to, text;
 import std.json;
-import std.traits   : Unqual, isBoolean, isIntegral, isFloatingPoint, isSomeString, isArray, isAssociativeArray;
-import std.typecons : Nullable;
+import std.range     : ElementType;
+import std.traits    : Unqual, isBoolean, isIntegral, isFloatingPoint, isSomeString, isArray, isAssociativeArray;
+import std.typecons  : Nullable;
 
 @property
 JSONValue toJSONValue(T)(auto ref T value)
 {
-    import std.algorithm;
-
     JSONValue result;
 
     static if (isBoolean!T)
@@ -104,4 +105,155 @@ unittest
 
     struct S {}
     static assert(!isNullable!S);
+}
+
+T fromJSONValue(T)(ref const JSONValue value)
+{
+    @trusted
+    void typeMismatch(string type)
+    {
+        throw new JSONException(text("Not ", type,": type = ", value.type));
+    }
+
+    T result;
+
+    static if (isBoolean!T)
+    {
+        if (value.type != JSON_TYPE.TRUE && value.type != JSON_TYPE.FALSE)
+            typeMismatch("boolean");
+        result = value.type == JSON_TYPE.TRUE;
+    }
+    else static if (isIntegral!T)
+    {
+        if (value.type != JSON_TYPE.INTEGER)
+            typeMismatch("integer");
+        result = value.integer.to!T();
+    }
+    else static if (isFloatingPoint!T)
+    {
+        // Should support integer to floating point?
+        if (value.type != JSON_TYPE.FLOAT)
+            typeMismatch("floating point");
+        result = value.floating.to!T();
+    }
+    else static if (isSomeString!T)
+    {
+        if (value.type != JSON_TYPE.STRING)
+            typeMismatch("string");
+        result = value.str.to!T();
+    }
+    else static if (isArray!T)
+    {
+        if (value.type != JSON_TYPE.ARRAY)
+            typeMismatch("array");
+        result = array(map!((a){ return fromJSONValue!(ElementType!T)(a); })(value.array));
+    }
+    else static if (isAssociativeArray!T)
+    {
+        if (value.type != JSON_TYPE.OBJECT)
+            typeMismatch("object");
+        foreach (k, v; value.object) {
+            ValueType!T v;
+            result[k] = fromJSONValue!(ValueType!T)(v);
+        }
+    }
+    else static if (is(T == struct) || is(T == class))
+    {
+        static if (is(T == class))
+        {
+            if (value.type == JSON_TYPE.NULL)
+                return null;
+        }
+
+        if (value.type != JSON_TYPE.OBJECT)
+            typeMismatch("object");
+
+        static if (is(T == class))
+        {
+            result = new T();
+        }
+
+        foreach(i, ref v; result.tupleof) {
+            auto field = getFieldName!(T, i) in value.object;
+            if (field)
+                v = fromJSONValue!(typeof(v))(*field);
+        }
+    }
+
+    return result;
+}
+
+unittest
+{
+    {
+        JSONValue jtrue;
+        jtrue.type = JSON_TYPE.TRUE;
+        assert(fromJSONValue!bool(jtrue));
+    }
+    {
+        JSONValue jfalse;
+        jfalse.type = JSON_TYPE.FALSE;
+        assert(!fromJSONValue!bool(jfalse));
+    }
+    {
+        JSONValue jint;
+        jint.type = JSON_TYPE.INTEGER;
+        jint.integer = int.max;
+        assert(fromJSONValue!int(jint) == int.max);
+        assert(fromJSONValue!ulong(jint) == int.max);
+    }
+    {
+        JSONValue jfloat;
+        jfloat.type = JSON_TYPE.FLOAT;
+        jfloat.floating = 10.5f;
+        assert(fromJSONValue!double(jfloat) == 10.5f);
+        assert(fromJSONValue!real(jfloat) == 10.5f);
+    }
+    {
+        JSONValue jstr;
+        jstr.type = JSON_TYPE.STRING;
+        jstr.str = "omoikane";
+        assert(fromJSONValue!string(jstr) == "omoikane");
+        assert(fromJSONValue!dstring(jstr) == "omoikane"d);
+    }
+    {
+        JSONValue jarr = parseJSON(`[1, 4, 9]`);
+        assert(fromJSONValue!(int[])(jarr) == [1, 4, 9]);
+        //assert(fromJSONValue!(real[])(jarr) == [1f, 4f, 9f]);
+    }
+    {
+        static struct Handa
+        {
+            static struct AAA
+            {
+                bool ok;
+            }
+
+            ulong id;
+            string name;
+            double height;
+            AAA aaa;
+        }
+
+        JSONValue jstruct = parseJSON(`{"height":169.5,"id":2,"name":"shinobu","aaa":{"ok":true}}`);
+        auto handa = fromJSONValue!Handa(jstruct);
+        assert(handa.id == 2);
+        assert(handa.name == "shinobu");
+        assert(handa.height == 169.5f);
+        assert(handa.aaa.ok);
+    }
+    {
+        static class Naito
+        {
+            ulong id;
+            string name;
+            double height;
+        }
+
+        JSONValue jclass = parseJSON(`{"height":164.0,"id":1,"name":"momoko","other":false}`);
+        auto naito = fromJSONValue!Naito(jclass);
+        assert(naito.id == 1);
+        assert(naito.name == "momoko");
+        assert(naito.height == 164.0f);
+    }
 }
