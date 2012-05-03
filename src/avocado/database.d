@@ -241,7 +241,6 @@ class Collection
             const request = Connection.Request(REST.GET, buildOwnPath("figures"));
             const response = database_.sendRequest(request);
 
-            std.stdio.writeln(toJSON(&response));
             return fromJSONValue!Figure(response.object["figures"]);
         }
     }
@@ -253,6 +252,7 @@ class Collection
          */
         bool isNewBorned()
         {
+            // Shoulde get status from database?
             return status_ == 1;
         }
 
@@ -283,13 +283,35 @@ class Collection
     }
 
     /**
+     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionLoad
+     */
+    @trusted
+    void load()
+    {
+        const request = Connection.Request(REST.PUT, buildOwnPath("load"));
+        database_.sendRequest(request);
+        status_ = 3;
+    }
+
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionUnload
+     */
+    @trusted
+    void unload()
+    {
+        const request = Connection.Request(REST.PUT, buildOwnPath("unload"));
+        database_.sendRequest(request);
+        status_ = 2;
+    }
+
+    /**
      * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionTruncate
      */
     @trusted
     void truncate()
     {
         const request = Connection.Request(REST.PUT, buildOwnPath("truncate"));
-        const response = database_.sendRequest(request);
+        database_.sendRequest(request);
     }
 
   private:
@@ -320,7 +342,7 @@ class Connection
         baseUri_ = text("http://", config_.host, ":", config.port);
     }
 
-    JSONValue sendRequest(ref const Request request) // const
+    JSONValue sendRequest(ref const Request request)
     {
         immutable uri = buildUriPath(baseUri_, request.path);
         char[] response;
