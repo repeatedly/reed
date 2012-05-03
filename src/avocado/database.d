@@ -48,6 +48,9 @@ class Database
 
     @property
     {
+        /**
+         * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionReadAll
+         */
         inout(Collection[]) collections() inout
         {
             const request = Connection.Request(REST.GET, CollectionAPIPath);
@@ -61,6 +64,9 @@ class Database
         }
     }
 
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionCreate
+     */
     Collection createCollection(ref const CollectionProperty properties)
     {
         const jsonified = properties.toJSONValue;
@@ -70,11 +76,15 @@ class Database
         return new Collection(this, response);
     }
 
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionDelete
+     */
     void deleteCollection(in ulong id)
     {
         deleteCollection(id.to!string());
     }
 
+    /// ditto
     void deleteCollection(in string name)
     {
         const request = Connection.Request(REST.DELETE, buildUriPath(CollectionAPIPath, name));
@@ -82,11 +92,15 @@ class Database
         // TODO : return to deleted id?
     }
 
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionRead
+     */
     inout(Collection) opIndex(ulong id) inout
     {
         return opIndex(id.to!string());
     }
 
+    /// ditto
     inout(Collection) opIndex(string name) inout
     {
         const request = Connection.Request(REST.GET, buildUriPath(CollectionAPIPath, name));
@@ -175,6 +189,9 @@ class Collection
             return name_;
         }
 
+        /**
+         * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionRename
+         */
         void name(string newName)
         {
             const jsonified = ["name": newName].toJSONValue;
@@ -184,6 +201,9 @@ class Collection
             name_ = newName;
         }
 
+        /**
+         * See_Also: size of http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionRead
+         */
         size_t length() const
         {
             const request = Connection.Request(REST.GET, buildOwnPath("count"));
@@ -192,6 +212,9 @@ class Collection
             return cast(size_t)response.object["count"].integer;
         }
 
+        /**
+         * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionProperties
+         */
         void waitForSync(bool newWaitForSync)
         {
             const jsonified = ["waitForSync": newWaitForSync].toJSONValue;
@@ -199,6 +222,9 @@ class Collection
             database_.sendRequest(request);
         }
 
+        /**
+         * See_Also: properties of http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionRead
+         */
         Property property() const
         {
             const request = Connection.Request(REST.GET, buildOwnPath("properties"));
@@ -207,6 +233,9 @@ class Collection
             return fromJSONValue!Property(response);
         }
 
+        /**
+         * See_Also: figures of http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionRead
+         */
         Figure figure() const
         {
             const request = Connection.Request(REST.GET, buildOwnPath("figures"));
@@ -253,6 +282,9 @@ class Collection
         }
     }
 
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionTruncate
+     */
     @trusted
     void truncate()
     {
