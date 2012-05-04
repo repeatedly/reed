@@ -5,7 +5,7 @@ module avocado.util;
 import std.array     : array;
 import std.algorithm : map;
 import std.conv      : to, text;
-import std.json;
+import std.json      : JSONValue, JSON_TYPE, JSONException, parseJSON;
 import std.range     : ElementType;
 import std.traits    : Unqual, isBoolean, isIntegral, isFloatingPoint, isSomeString, isArray, isAssociativeArray;
 import std.typecons  : Nullable;

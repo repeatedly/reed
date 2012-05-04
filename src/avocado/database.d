@@ -266,7 +266,7 @@ class Collection
             return status_ == 3;
         }
 
-        bool isBeginUnloaded()
+        bool isBeingUnloaded()
         {
             return status_ == 4;
         }
