@@ -39,7 +39,10 @@ clean:
 
 MAIN_FILE = "empty_avocado_unittest.d"
 
+# Why linking with -m64 fails on Mac?
+UNITTEST_DFLAGS = -Isrc -m$(MODEL) -w -d -property -unittest -L-lcurl
+
 unittest:
 	echo 'import avocado.database; void main(){}' > $(MAIN_FILE)
-	$(DMD) $(DFLAGS) -unittest -of$(LIB) $(SRCS) -run $(MAIN_FILE)
+	$(DMD) $(UNITTEST_DFLAGS) $(SRCS) -run $(MAIN_FILE)
 	rm $(MAIN_FILE)
