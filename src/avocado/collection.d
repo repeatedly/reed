@@ -299,6 +299,12 @@ class Collection
     }
 
     /**
+     * See_Also: http://www.avocadodb.org/manuals/RestDocument.html#RestDocumentHead
+     * Issue: http://d.puremagic.com/issues/show_bug.cgi?id=8048
+     */
+    // bool checkDocument(ref const DocumentHandle handle) nothrow
+
+    /**
      * See_Also: http://www.avocadodb.org/manuals/RestDocument.html#RestDocumentDelete
      */
     @safe

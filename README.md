@@ -16,7 +16,9 @@ Currenlty, not fully implemented.
 
 1. REST Interface
 
-    1.1 REST Interface for Documents (80% done. etag is not implemented yet)
+    1.1 <del>REST Interface for Documents</del>
+
+        * "etag" header is not supported yet.
 
     1.2 REST Interface for Edges
 
