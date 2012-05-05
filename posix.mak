@@ -1,6 +1,6 @@
 # build mode: 32bit or 64bit
 ifeq (,$(MODEL))
-	MODEL := 64
+	MODEL := 32 # Why libavocadod.a with -m64 doesn't work on Mac?
 endif
 
 ifeq (,$(DMD))
@@ -16,7 +16,7 @@ else
 	DFLAGS += -O -release -nofloat -inline
 endif
 
-NAMES = database util
+NAMES = database collection util
 FILES = $(addsuffix .d, $(NAMES))
 SRCS  = $(addprefix src/avocado/, $(FILES))
 
@@ -40,7 +40,7 @@ clean:
 MAIN_FILE = "empty_avocado_unittest.d"
 
 # Why linking with -m64 fails on Mac?
-UNITTEST_DFLAGS = -Isrc -m$(MODEL) -w -d -property -unittest -L-lcurl
+UNITTEST_DFLAGS = $(DFLAGS) -unittest -L-lcurl
 
 unittest:
 	echo 'import avocado.database; void main(){}' > $(MAIN_FILE)

@@ -10,6 +10,37 @@ import std.range     : ElementType;
 import std.traits    : Unqual, isBoolean, isIntegral, isFloatingPoint, isSomeString, isArray, isAssociativeArray;
 import std.typecons  : Nullable;
 
+@safe
+string buildUriPath(Paths...)(Paths paths)
+{
+    import std.algorithm;
+
+    @safe
+    static typeof(return) joinPaths(in string lhs, in string rhs) pure nothrow
+    {
+        return lhs ~ "/" ~ rhs;
+    }
+
+    @trusted
+    string[] pathsToStringArray() //TODO: pure nothrow (because of to!string)
+    {
+        auto result = new string[](paths.length);
+        foreach (i, path; paths)
+            result[i] = path.to!string();
+        return result;
+    }
+
+    return reduce!joinPaths(pathsToStringArray());
+}
+
+unittest
+{
+    assert(buildUriPath("") == "");
+    assert(buildUriPath("handa") == "handa");
+    assert(buildUriPath("handa", "shinobu") == "handa/shinobu");
+    assert(buildUriPath("handa", 18UL) == "handa/18");
+}
+
 @trusted
 string toJSON(ref const JSONValue value)
 {
