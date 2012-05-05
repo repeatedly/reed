@@ -33,6 +33,18 @@ class Database
         Nullable!long journalSize;
     }
 
+    static struct SystemStatus
+    {
+        // Why 'userTime' and 'systemTime' are null?
+        //size_t userTime;
+        //size_t systemTime;
+        size_t numberOfThreads;
+        size_t residentSize;
+        size_t virtualSize;
+        size_t minorPageFaults;
+        size_t majorPageFaults;
+    }
+
   private:
     Connection connection_;
 
@@ -58,6 +70,18 @@ class Database
                 result ~= new Collection(cast()this, collection);
 
             return cast(typeof(return))result;
+        }
+
+        /**
+         * See_Also: http://www.avocadodb.org/manuals/HttpSystem.html#HttpSystemStatus
+         */
+        @safe
+        SystemStatus systemStatus() const
+        {
+            const request = Connection.Request(Method.GET, "_system/status");
+            const response = sendRequest(request);
+
+            return fromJSONValue!SystemStatus(response.object["system"]);
         }
     }
 
