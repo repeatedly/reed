@@ -5,12 +5,18 @@ module avocado.util;
 import std.array     : array;
 import std.algorithm : map;
 import std.conv      : to, text;
-import std.json      : JSONValue, JSON_TYPE, JSONException, parseJSON;
+import std.json;
 import std.range     : ElementType;
 import std.traits    : Unqual, isBoolean, isIntegral, isFloatingPoint, isSomeString, isArray, isAssociativeArray;
 import std.typecons  : Nullable;
 
-@property
+@trusted
+string toJSON(ref const JSONValue value)
+{
+    return std.json.toJSON(&value);
+}
+
+@trusted
 JSONValue toJSONValue(T)(auto ref T value)
 {
     JSONValue result;
@@ -37,13 +43,13 @@ JSONValue toJSONValue(T)(auto ref T value)
     else static if (isArray!T)
     {
         result.type = JSON_TYPE.ARRAY;
-        result.array = array(map!((a){ return a.toJSONValue; })(value));
+        result.array = array(map!((a){ return a.toJSONValue(); })(value));
     }
     else static if (isAssociativeArray!T)
     {
         result.type = JSON_TYPE.OBJECT;
         foreach (k, v; value)
-            result.object[k] = v.toJSONValue;
+            result.object[k] = v.toJSONValue();
     }
     else static if (is(T == struct) || is(T == class))
     {
@@ -60,11 +66,11 @@ JSONValue toJSONValue(T)(auto ref T value)
             static if (isNullable!(typeof(v)))
             {
                 if (!v.isNull)
-                    result.object[getFieldName!(T, i)] = v.get.toJSONValue;
+                    result.object[getFieldName!(T, i)] = v.get.toJSONValue();
             }
             else
             {
-                result.object[getFieldName!(T, i)] = v.toJSONValue;
+                result.object[getFieldName!(T, i)] = v.toJSONValue();
             }
         }
     }
@@ -107,6 +113,7 @@ unittest
     static assert(!isNullable!S);
 }
 
+@trusted
 T fromJSONValue(T)(ref const JSONValue value)
 {
     @trusted

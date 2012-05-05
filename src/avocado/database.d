@@ -3,7 +3,7 @@
 module avocado.database;
 
 import std.conv     : to, text;
-import std.json     : toJSON, parseJSON, JSONValue;
+import std.json     : parseJSON, JSONValue;
 import std.typecons : Nullable;
 import std.net.curl : get, put, post, del;
 
@@ -41,6 +41,7 @@ class Database
     Connection connection_;
 
   public:
+    @safe
     this(ref const Configuration config)
     {
         connection_ = new Connection(config);
@@ -67,10 +68,11 @@ class Database
     /**
      * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionCreate
      */
+    @safe
     Collection createCollection(ref const CollectionProperty properties)
     {
-        const jsonified = properties.toJSONValue;
-        const request = Connection.Request(REST.POST, CollectionAPIPath, toJSON(&jsonified));
+        const jsonified = properties.toJSONValue();
+        const request = Connection.Request(REST.POST, CollectionAPIPath, jsonified.toJSON());
         const response = sendRequest(request);
 
         return new Collection(this, response);
@@ -79,12 +81,14 @@ class Database
     /**
      * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionDelete
      */
+    @trusted
     void deleteCollection(in ulong id)
     {
-        deleteCollection(id.to!string());
+        deleteCollection(id.to!string()); // @trusted because of to!string is @system
     }
 
     /// ditto
+    @trusted
     void deleteCollection(in string name)
     {
         const request = Connection.Request(REST.DELETE, buildUriPath(CollectionAPIPath, name));
@@ -95,12 +99,14 @@ class Database
     /**
      * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionRead
      */
+    @trusted
     inout(Collection) opIndex(ulong id) inout
     {
-        return opIndex(id.to!string());
+        return opIndex(id.to!string()); // see deleteCollection
     }
 
     /// ditto
+    @trusted
     inout(Collection) opIndex(string name) inout
     {
         const request = Connection.Request(REST.GET, buildUriPath(CollectionAPIPath, name));
@@ -109,13 +115,14 @@ class Database
         return new typeof(return)(cast()this, response);
     }
 
-  private:
     // TODO: Clean up
+    @safe
     JSONValue sendRequest(ref const Connection.Request request)
     {
         return connection_.sendRequest(request);
     }
 
+    @safe
     JSONValue sendRequest(ref const Connection.Request request) const
     {
         return connection_.sendRequest(request);
@@ -163,6 +170,7 @@ class Collection
     uint status_;
 
   public:
+    @trusted
     this(Database database, ref const JSONValue info)
     {
         database_ = database;
@@ -175,15 +183,13 @@ class Collection
             status_ = info.object["status"].integer.to!uint();
     }
 
-    @property @trusted
+    @property @safe
     {
-        @safe
         nothrow ulong id() const
         {
             return id_;
         }
 
-        @safe
         nothrow string name() const
         {
             return name_;
@@ -194,8 +200,8 @@ class Collection
          */
         void name(string newName)
         {
-            const jsonified = ["name": newName].toJSONValue;
-            const request = Connection.Request(REST.PUT, buildOwnPath("rename"), toJSON(&jsonified));
+            const jsonified = ["name": newName].toJSONValue();
+            const request = Connection.Request(REST.PUT, buildOwnPath("rename"), jsonified.toJSON());
             const response = database_.sendRequest(request);
 
             name_ = newName;
@@ -204,6 +210,7 @@ class Collection
         /**
          * See_Also: size of http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionRead
          */
+        @trusted
         size_t length() const
         {
             const request = Connection.Request(REST.GET, buildOwnPath("count"));
@@ -217,8 +224,8 @@ class Collection
          */
         void waitForSync(bool newWaitForSync)
         {
-            const jsonified = ["waitForSync": newWaitForSync].toJSONValue;
-            const request = Connection.Request(REST.PUT, buildOwnPath("properties"), toJSON(&jsonified));
+            const jsonified = ["waitForSync": newWaitForSync].toJSONValue();
+            const request = Connection.Request(REST.PUT, buildOwnPath("properties"), jsonified.toJSON());
             database_.sendRequest(request);
         }
 
@@ -285,7 +292,7 @@ class Collection
     /**
      * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionLoad
      */
-    @trusted
+    @safe
     void load()
     {
         const request = Connection.Request(REST.PUT, buildOwnPath("load"));
@@ -296,7 +303,7 @@ class Collection
     /**
      * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionUnload
      */
-    @trusted
+    @safe
     void unload()
     {
         const request = Connection.Request(REST.PUT, buildOwnPath("unload"));
@@ -307,7 +314,7 @@ class Collection
     /**
      * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionTruncate
      */
-    @trusted
+    @safe
     void truncate()
     {
         const request = Connection.Request(REST.PUT, buildOwnPath("truncate"));
@@ -336,12 +343,14 @@ class Connection
     string baseUri_;
 
   public:
+    @trusted
     this(ref const Configuration config)
     {
         config_ = config;
         baseUri_ = text("http://", config_.host, ":", config.port);
     }
 
+    @trusted
     JSONValue sendRequest(ref const Request request)
     {
         immutable uri = buildUriPath(baseUri_, request.path);
@@ -366,6 +375,7 @@ class Connection
         return parseJSON(response);
     }
 
+    @trusted
     JSONValue sendRequest(ref const Request request) const
     {
         immutable uri = buildUriPath(baseUri_, request.path);
