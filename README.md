@@ -16,29 +16,34 @@ Currenlty, not fully implemented.
 
 1. REST Interface
 
-    1.1 <del>REST Interface for Documents</del>
+    1. <del>REST Interface for Documents</del>
+      * "etag" header is not supported yet.
 
-        * "etag" header is not supported yet.
+    2. REST Interface for Edges
 
-    1.2 REST Interface for Edges
+2. Light-Weight HTTP for Queries (Working)
 
-2. Light-Weight HTTP for Queries
+    1. HTTP Interface for Cursors
 
-    2.1 HTTP Interface for Cursors
-
-    2.2 HTTP Interface for Simple Queries
+    2. HTTP Interface for Simple Queries
 
 3. Light-Weight HTTP for Administration
 
-    3.1 <del>HTTP Interface for Collections</del>
+    1. <del>HTTP Interface for Collections</del>
 
-    3.2 HTTP Interface for Indexes
+    2. HTTP Interface for Indexes
 
-    3.3 HTTP Interface for Administration and Monitoring
+    3. HTTP Interface for Administration and Monitoring
 
-    3.4 Simple Queries
+    4. Simple Queries
 
-    3.5 REST Interface for storing key-value pairs
+        1. <del>by-example</del>
+        
+        2. near
+
+        3. within
+
+    5. REST Interface for storing key-value pairs
 
 # Link
 
