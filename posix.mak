@@ -16,7 +16,7 @@ else
 	DFLAGS += -O -release -nofloat -inline
 endif
 
-NAMES = database collection util
+NAMES = database collection document util
 FILES = $(addsuffix .d, $(NAMES))
 SRCS  = $(addprefix src/avocado/, $(FILES))
 
