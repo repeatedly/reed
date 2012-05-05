@@ -50,6 +50,11 @@ string toJSON(ref const JSONValue value)
 @trusted
 JSONValue toJSONValue(T)(auto ref T value)
 {
+    static if (is(T : JSONValue))
+    {
+        return value;
+    }
+
     JSONValue result;
 
     static if (isBoolean!T)
@@ -147,6 +152,11 @@ unittest
 @trusted
 T fromJSONValue(T)(ref const JSONValue value)
 {
+    static if (is(T : JSONValue))
+    {
+        return value;
+    }
+
     @trusted
     void typeMismatch(string type)
     {
