@@ -8,7 +8,13 @@ import std.typecons : Nullable;
 import std.net.curl : get, put, post, del, HTTP;
 
 import avocado.collection;
+import avocado.document;
 import avocado.util;
+
+public
+{
+    import avocado.document : DocumentHandle;
+}
 
 private
 {
@@ -83,6 +89,25 @@ class Database
 
             return fromJSONValue!SystemStatus(response.object["system"]);
         }
+    }
+
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionCreate
+     */
+    @safe
+    DocumentHandle putDocument(T)(in string collectionName, auto ref const T document)
+    {
+        @trusted
+        string buildPath()
+        {
+            return text(DocumentAPIPath, "?collection=", collectionName, "&createCollection=true");
+        }
+
+        const jsonified = document.toJSONValue();
+        const request = Connection.Request(Method.POST, buildPath(), jsonified.toJSON());
+        const response = sendRequest(request);
+
+        return fromJSONValue!DocumentHandle(response);
     }
 
     /**

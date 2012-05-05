@@ -279,6 +279,26 @@ class Collection
     }
 
     /**
+     * See_Also: http://www.avocadodb.org/manuals/RestDocument.html#RestDocumentUpdate
+     */
+    @safe
+    DocumentHandle updateDocument(T)(ulong revision, auto ref const T document)
+    {
+        return updateDocument(DocumentHandle(id_, revision), document);
+    }
+
+    /// ditto
+    @safe
+    DocumentHandle updateDocument(T)(ref const DocumentHandle handle, auto ref const T document)
+    {
+        const jsonified = document.toJSONValue();
+        const request = Connection.Request(Method.PUT, buildDocumentPath(handle), jsonified.toJSON());
+        const response = database_.sendRequest(request);
+
+        return fromJSONValue!DocumentHandle(response);
+    }
+
+    /**
      * See_Also: http://www.avocadodb.org/manuals/RestDocument.html#RestDocumentDelete
      */
     @safe
