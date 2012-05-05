@@ -8,7 +8,7 @@ import avocado.util;
 
 public
 {
-    import avocado.document : DocumentHandle;
+    import avocado.document : Document, DocumentHandle;
 }
 
 private
@@ -216,26 +216,26 @@ class Collection
      * See_Also: http://www.avocadodb.org/manuals/RestDocument.html#RestDocumentCreate
      */
     @safe
-    T getDocument(T = JSONValue)(ulong revision) const
+    Document!T getDocument(T = JSONValue)(ulong revision) const
     {
         return getDocument(DocumentHandle(id_, revision));
     }
 
     /// ditto
     @safe
-    T getDocument(T = JSONValue)(ref const DocumentHandle handle) const
+    Document!T getDocument(T = JSONValue)(ref const DocumentHandle handle) const
     {
         const request = Connection.Request(Method.GET, buildDocumentPath(handle));
         auto response = database_.sendRequest(request);
+        auto newHandle = extractDocumentHandle(response);
+
         static if (is(T : JSONValue))
         {
-            return response;
+            return Document!T(newHandle, response);
         }
         else
         {
-            response.object.remove("_id");
-            response.object.remove("_rev");
-            return fromJSONValue!T(response);
+            return Document!T(newHandle, fromJSONValue!T(response));
         }
     }
 

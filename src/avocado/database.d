@@ -7,13 +7,12 @@ import std.json     : parseJSON, JSONValue;
 import std.typecons : Nullable;
 import std.net.curl : get, put, post, del, HTTP;
 
-import avocado.collection;
 import avocado.document;
 import avocado.util;
 
 public
 {
-    import avocado.document : DocumentHandle;
+    import avocado.collection;
 }
 
 private
