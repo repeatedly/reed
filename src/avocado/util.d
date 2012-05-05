@@ -7,7 +7,7 @@ import std.algorithm : map;
 import std.conv      : to, text;
 import std.json;
 import std.range     : ElementType;
-import std.traits    : Unqual, isBoolean, isIntegral, isFloatingPoint, isSomeString, isArray, isAssociativeArray;
+import std.traits    : Unqual, isBoolean, isIntegral, isFloatingPoint, isSomeString, isArray, isAssociativeArray, ValueType;
 import std.typecons  : Nullable;
 
 @safe
@@ -190,10 +190,8 @@ T fromJSONValue(T)(ref const JSONValue value)
     {
         if (value.type != JSON_TYPE.OBJECT)
             typeMismatch("object");
-        foreach (k, v; value.object) {
-            ValueType!T v;
+        foreach (k, v; value.object)
             result[k] = fromJSONValue!(ValueType!T)(v);
-        }
     }
     else static if (is(T == struct) || is(T == class))
     {

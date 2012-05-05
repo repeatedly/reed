@@ -5,7 +5,7 @@ module avocado.database;
 import std.conv     : to, text;
 import std.json     : parseJSON, JSONValue;
 import std.typecons : Nullable;
-import std.net.curl : get, put, post, del;
+import std.net.curl : get, put, post, del, HTTP;
 
 import avocado.collection;
 import avocado.util;
@@ -186,17 +186,18 @@ class Connection
     JSONValue sendRequest(ref const Request request)
     {
         immutable uri = buildUriPath(baseUri_, request.path);
+        auto client = HTTP();
         char[] response;
 
         final switch (request.method) {
         case Method.GET:
-            response = get(uri);
+            response = get(uri, client);
             break;
         case Method.POST:
-            response = post(uri, request.content);
+            response = post(uri, request.content, client);
             break;
         case Method.PUT:
-            response = put(uri, request.content);
+            response = put(uri, request.content, client);
             break;
         case Method.DELETE:
             response = "{}".dup;
@@ -211,11 +212,12 @@ class Connection
     JSONValue sendRequest(ref const Request request) const
     {
         immutable uri = buildUriPath(baseUri_, request.path);
+        auto client = HTTP();
         char[] response;
 
         final switch (request.method) {
         case Method.GET:
-            response = get(uri);
+            response = get(uri, client);
             break;
         case Method.POST:
         case Method.PUT:

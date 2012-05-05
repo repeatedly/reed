@@ -3,7 +3,13 @@
 module avocado.collection;
 
 import avocado.database;
+import avocado.document;
 import avocado.util;
+
+public
+{
+    import avocado.document : DocumentHandle;
+}
 
 private
 {
@@ -203,6 +209,94 @@ class Collection
         const request = Connection.Request(Method.PUT, buildOwnPath("truncate"));
         database_.sendRequest(request);
     }
+
+    /// Document APIs
+
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/RestDocument.html#RestDocumentCreate
+     */
+    @safe
+    T getDocument(T = JSONValue)(ulong revision) const
+    {
+        return getDocument(DocumentHandle(id_, revision));
+    }
+
+    /// ditto
+    @safe
+    T getDocument(T = JSONValue)(ref const DocumentHandle handle) const
+    {
+        const request = Connection.Request(Method.GET, buildDocumentPath(handle));
+        auto response = database_.sendRequest(request);
+        static if (is(T : JSONValue))
+        {
+            return response;
+        }
+        else
+        {
+            response.object.remove("_id");
+            response.object.remove("_rev");
+            return fromJSONValue!T(response);
+        }
+    }
+
+    // T getDocument(T = JSONValue)(ref const DocumentHandle handle, ulong etag, bool match = true) const
+
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/RestDocument.html#RestDocumentReadAll
+     */
+    @safe
+    string[] getDocumentURIs() const
+    {
+        @trusted
+        string buildPath()
+        {
+            return text(DocumentAPIPath, "?collection=", id_);
+        }
+
+        const request = Connection.Request(Method.GET, buildPath());
+        const response = database_.sendRequest(request);
+
+        return fromJSONValue!(string[])(response.object["documents"]);
+    }
+
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/RestDocument.html#RestDocumentCreate
+     */
+    @safe
+    DocumentHandle putDocument(T)(auto ref const T document)
+    {
+        @trusted
+        string buildPath()
+        {
+            return text(DocumentAPIPath, "?collection=", id_);
+        }
+
+        const jsonified = document.toJSONValue();
+        const request = Connection.Request(Method.POST, buildPath(), jsonified.toJSON());
+        const response = database_.sendRequest(request);
+
+        return fromJSONValue!DocumentHandle(response);
+    }
+
+    /**
+     * See_Also: http://www.avocadodb.org/manuals/RestDocument.html#RestDocumentDelete
+     */
+    @safe
+    void deleteDocument(ulong revision)
+    {
+        return deleteDocument(DocumentHandle(id_, revision));
+    }
+
+    /// ditto
+    @safe
+    void deleteDocument(ref const DocumentHandle handle)
+    {
+        // TODO: Support support policy
+        const request = Connection.Request(Method.DELETE, buildDocumentPath(handle));
+        database_.sendRequest(request);
+    }
+
+    // void deleteDocument(ref const DocumentHandle handle, ulong etag)
 
   private:
     @safe
