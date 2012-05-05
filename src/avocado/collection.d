@@ -8,6 +8,7 @@ import avocado.util;
 
 public
 {
+    import avocado.query;
     import avocado.document : Document, DocumentHandle;
 }
 
@@ -323,6 +324,8 @@ class Collection
     }
 
     // void deleteDocument(ref const DocumentHandle handle, ulong etag)
+
+    mixin SimpleQueryAPIs;
 
   private:
     @safe
