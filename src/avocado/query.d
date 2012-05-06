@@ -2,7 +2,7 @@
 
 module avocado.query;
 
-import std.array    : empty, front, popFront;
+import std.array    : empty, front, popFront, array;
 import std.typecons : Nullable;
 
 import avocado.database;
@@ -11,8 +11,8 @@ import avocado.util;
 
 package
 {
-    immutable SimpleQueryAPIPath = Database.APIPrefix ~ "/simple";
-    immutable CursorAPIPath = Database.APIPrefix ~ "/cursor";
+    immutable SimpleQueryAPIPath = buildUriPath(Database.APIPrefix, "simple");
+    immutable CursorAPIPath = buildUriPath(Database.APIPrefix, "cursor");
 }
 
 struct ByExampleOption
@@ -52,7 +52,7 @@ struct Cursor(T)
             return documents_.empty;
         }
 
-        Document!T front()
+        inout(Document!T) front() inout
         {
             return documents_.front;
         }
@@ -143,20 +143,6 @@ string buildCursorPath(ulong id) // pure
 @trusted
 Document!(T)[] toDocuments(T)(ref JSONValue response)
 {
-    typeof(return) result;
-    result.reserve(response.array.length);
-
-    foreach (ref value; response.array) {
-        auto newHandle = extractDocumentHandle(value);
-        static if (is(T : JSONValue))
-        {
-            result ~= Document!T(newHandle, value);
-        }
-        else
-        {
-            result ~= Document!T(newHandle, fromJSONValue!T(value));
-        }
-    }
-
-    return result;
+    import std.algorithm : map;
+    return array(map!(toDocument!T)(response.array));
 }

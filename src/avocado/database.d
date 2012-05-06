@@ -55,7 +55,7 @@ class Database
 
   public:
     @safe
-    this(ref const Configuration config)
+    this(ref const Configuration config = Configuration())
     {
         connection_ = new Connection(config.endpoint);
     }

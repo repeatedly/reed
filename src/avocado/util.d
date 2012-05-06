@@ -3,7 +3,7 @@
 module avocado.util;
 
 import std.array     : array;
-import std.algorithm : map;
+import std.algorithm : map, reduce;
 import std.conv      : to, text;
 import std.json;
 import std.range     : ElementType;
@@ -13,10 +13,7 @@ import std.typecons  : Nullable;
 @safe
 string buildUriPath(Paths...)(Paths paths)
 {
-    import std.algorithm;
-
-    @safe
-    static typeof(return) joinPaths(in string lhs, in string rhs) pure nothrow
+    static string joinPaths(in string lhs, in string rhs) pure nothrow
     {
         return lhs ~ "/" ~ rhs;
     }
@@ -50,11 +47,6 @@ string toJSON(ref const JSONValue value)
 @trusted
 JSONValue toJSONValue(T)(auto ref T value)
 {
-    static if (is(T : JSONValue))
-    {
-        return value;
-    }
-
     JSONValue result;
 
     static if (isBoolean!T)
@@ -152,11 +144,6 @@ unittest
 @trusted
 T fromJSONValue(T)(ref const JSONValue value)
 {
-    static if (is(T : JSONValue))
-    {
-        return value;
-    }
-
     @trusted
     void typeMismatch(string type)
     {

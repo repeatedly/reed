@@ -20,7 +20,7 @@ private
 class Collection
 {
   public:
-    immutable APIPath = Database.APIPrefix ~ "/collection";
+    immutable APIPath = buildUriPath(Database.APIPrefix, "collection");
 
     static struct Property
     {
@@ -228,16 +228,8 @@ class Collection
     {
         const request = Connection.Request(Method.GET, buildDocumentPath(handle));
         auto response = database_.sendRequest(request);
-        auto newHandle = extractDocumentHandle(response);
 
-        static if (is(T : JSONValue))
-        {
-            return Document!T(newHandle, response);
-        }
-        else
-        {
-            return Document!T(newHandle, fromJSONValue!T(response));
-        }
+        return toDocument!T(response);
     }
 
     // T getDocument(T = JSONValue)(ref const DocumentHandle handle, ulong etag, bool match = true) const

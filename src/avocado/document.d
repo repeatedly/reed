@@ -2,7 +2,6 @@
 
 module avocado.document;
 
-import std.array    : split;
 import std.conv     : to, text;
 import std.json     : JSONValue;
 import std.typecons : Tuple;
@@ -117,6 +116,20 @@ unittest
     }
 }
 
+@safe
+Document!T toDocument(T)(ref JSONValue value)
+{
+    auto newHandle = extractDocumentHandle(value);
+    static if (is(T : JSONValue))
+    {
+        return Document!T(newHandle, value);
+    }
+    else
+    {
+        return Document!T(newHandle, fromJSONValue!T(value));
+    }
+}
+
 package:
 
 @safe
@@ -139,7 +152,7 @@ unittest
     assert(extractDocumentHandle(value) == DocumentHandle("123/456", 789));
 }
 
-@trusted
+@safe
 string buildDocumentPath(ref const DocumentHandle handle)
 {
     return buildUriPath(DocumentAPIPath, handle.id);
