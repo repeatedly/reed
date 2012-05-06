@@ -5,7 +5,7 @@ import std.stdio;
 
 void cleanupCollections()
 {
-    auto database = new Database(Configuration());
+    auto database = new Database();
     foreach (collection; database.collections)
         database.deleteCollection(collection.name);
 }
@@ -94,17 +94,6 @@ void main()
         assert(changedProperty != createdProperty);
         assert(!changedProperty.waitForSync);
     }
-    //writeln(typeid(typeof(collections)));
-    /*
-    string name = "ccc";
-    collection.name = name;
-    auto collection2 = database["ccc"];
-    writeln(collection2.name);
-    writeln(collection2.id);
 
-    //collections[0].truncate();
-    */
-    /*
-    */
     cleanupCollections();
 }

@@ -8,7 +8,7 @@ import std.stdio;
 
 void cleanupCollections()
 {
-    auto database = new Database(Configuration());
+    auto database = new Database();
     foreach (collection; database.collections)
         database.deleteCollection(collection.name);
 }
@@ -20,7 +20,7 @@ void main()
     immutable name = "test";
     writeln("Put new document with '", name, "' collection");
 
-    auto database = new Database(Configuration());
+    auto database = new Database();
     auto firstDH = database.putDocument(name, ["yes": true]);
     {
         assert(database.collections.length == 1);

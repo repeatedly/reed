@@ -6,7 +6,7 @@ import std.stdio;
 
 void cleanupCollections()
 {
-    auto database = new Database(Configuration());
+    auto database = new Database();
     foreach (collection; database.collections)
         database.deleteCollection(collection.name);
 }
@@ -15,7 +15,7 @@ void main()
 {
     cleanupCollections();
 
-    auto database = new Database(Configuration());
+    auto database = new Database();
     auto collection = database.createCollection(Database.CollectionProperty("sample_collection"));
 
     void putDocuments()
