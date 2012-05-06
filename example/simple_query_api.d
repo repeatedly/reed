@@ -1,13 +1,8 @@
-import avocado.collection;
 import avocado.database;
 
 import std.array;
 import std.algorithm;
-import std.json;
-import std.range;
 import std.stdio;
-import std.traits;
-import std.typecons;
 
 void cleanupCollections()
 {
@@ -101,12 +96,6 @@ void main()
             assert(result.length == 20);
         }
     }
-
-    //ByExampleOption option;
-    //option.skip = 10;
-    //writeln(collection.queryByExample!(string[string])(["name": "shinobu"], option));
-    //writeln(collection.queryByExample!(string[string])(["name": "shinobu"]));
-    //writeln(database.putDocument(["c": true], "test"));
 
     cleanupCollections();
 }
