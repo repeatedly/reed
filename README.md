@@ -23,7 +23,7 @@ Currenlty, not fully implemented.
 
 2. Light-Weight HTTP for Queries (Working)
 
-    1. HTTP Interface for Cursors
+    1. HTTP Interface for Cursors (50% done)
 
     2. HTTP Interface for Simple Queries
 
@@ -37,11 +37,13 @@ Currenlty, not fully implemented.
 
     4. Simple Queries
 
-        1. <del>by-example</del>
-        
-        2. near
+        1. <del>all</del>
 
-        3. within
+        2. <del>by-example</del>
+        
+        3. near
+
+        4. within
 
     5. REST Interface for storing key-value pairs
 
