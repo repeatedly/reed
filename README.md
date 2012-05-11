@@ -1,13 +1,13 @@
-avocado-d-driver
+arango-d-driver
 ================
 
-AvocadoDB Driver for D
+ArangoDB Driver for D
 
 Currenlty, not fully implemented.
 
 # TODO
 
-* Rename project (AvocadoDB related project derived from Avocado varieties)
+* Rename project (ArangoDB related project derived from Avocado varieties)
 * Implement APIs (See Progress section)
 * Error handling
 * Using Robert's JSON module if compilation succeeded
@@ -49,9 +49,9 @@ Currenlty, not fully implemented.
 
 # Link
 
-* [AvocadoDB - the universal nosql database](http://www.avocadodb.org/)
+* [ArangoDB - the universal nosql database](http://www.arangodb.org/)
 
-* [AvocadoDB's Github](https://github.com/triAGENS/AvocadoDB)
+* [ArangoDB's Github](https://github.com/triAGENS/AvocadoDB)
 
 # Copyright
 

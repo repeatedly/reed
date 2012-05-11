@@ -1,18 +1,18 @@
 // Written in the D programming language.
 
-module avocado.database;
+module arango.database;
 
 import std.conv     : to, text;
 import std.json     : parseJSON, JSONValue;
 import std.typecons : Nullable;
 import std.net.curl : get, put, post, del, HTTP;
 
-import avocado.document;
-import avocado.util;
+import arango.document;
+import arango.util;
 
 public
 {
-    import avocado.collection;
+    import arango.collection;
 }
 
 private
@@ -63,7 +63,7 @@ class Database
     @property
     {
         /**
-         * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionReadAll
+         * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionReadAll
          */
         inout(Collection[]) collections() inout
         {
@@ -78,7 +78,7 @@ class Database
         }
 
         /**
-         * See_Also: http://www.avocadodb.org/manuals/HttpSystem.html#HttpSystemStatus
+         * See_Also: http://www.arangodb.org/manuals/HttpSystem.html#HttpSystemStatus
          */
         @safe
         SystemStatus systemStatus() const
@@ -91,7 +91,7 @@ class Database
     }
 
     /**
-     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionCreate
+     * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionCreate
      */
     @safe
     DocumentHandle putDocument(T)(in string collectionName, auto ref const T document)
@@ -110,7 +110,7 @@ class Database
     }
 
     /**
-     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionCreate
+     * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionCreate
      */
     @safe
     Collection createCollection(ref const CollectionProperty properties)
@@ -123,7 +123,7 @@ class Database
     }
 
     /**
-     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionDelete
+     * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionDelete
      */
     @trusted
     void deleteCollection(in ulong id)
@@ -141,7 +141,7 @@ class Database
     }
 
     /**
-     * See_Also: http://www.avocadodb.org/manuals/HttpCollection.html#HttpCollectionRead
+     * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionRead
      */
     @trusted
     inout(Collection) opIndex(ulong id) inout

@@ -1,12 +1,12 @@
 // Written in the D programming language.
 
-module avocado.document;
+module arango.document;
 
 import std.conv     : to, text;
 import std.json     : JSONValue;
 import std.typecons : Tuple;
 
-import avocado.util;
+import arango.util;
 
 version(unittest) import std.exception;
 

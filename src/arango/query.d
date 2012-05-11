@@ -1,13 +1,13 @@
 // Written in the D programming language.
 
-module avocado.query;
+module arango.query;
 
 import std.array    : empty, front, popFront, array;
 import std.typecons : Nullable;
 
-import avocado.database;
-import avocado.document;
-import avocado.util;
+import arango.database;
+import arango.document;
+import arango.util;
 
 package
 {
@@ -88,7 +88,7 @@ struct Cursor(T)
 mixin template SimpleQueryAPIs()
 {
     /**
-     * See_Also: http://www.avocadodb.org/manuals/HttpSimple.html#HttpSimpleAll
+     * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleAll
      */
     @trusted
     Cursor!(T) queryAll(T = JSONValue)(ref AllOption option = AllOption())
@@ -102,7 +102,7 @@ mixin template SimpleQueryAPIs()
     }
 
     /**
-     * See_Also: http://www.avocadodb.org/manuals/OTWP.html#OTWPSimpleQueriesByExample
+     * See_Also: http://www.arangodb.org/manuals/OTWP.html#OTWPSimpleQueriesByExample
      */
     @trusted
     Document!(T)[] queryByExample(T = JSONValue, S)(S example, ref ByExampleOption option = ByExampleOption())

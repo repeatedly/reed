@@ -1,5 +1,4 @@
-//import avocado.collection;
-import avocado.database;
+import arango.database;
 
 import std.array;
 import std.algorithm;
@@ -27,8 +26,6 @@ void main()
         assert(database.collections[0].name == name);
     }
 
-    writeln("Put documents");
-
     auto collection = database[name];
 
     void check(size_t i, DocumentHandle handle)
@@ -54,10 +51,15 @@ void main()
         }
     }
 
+    writeln("Put documents");
+
     DocumentHandle[] handles = [firstDH];
     handles ~= collection.putDocument(["price": 100]);
     handles ~= collection.putDocument(["name": "shinobu"]);
     handles ~= collection.putDocument(Configuration());
+
+    writeln("Get document");
+
     {
         foreach (i, handle; handles) {
             assert(collection.getDocument(handle).handle == handle);

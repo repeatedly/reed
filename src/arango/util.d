@@ -1,6 +1,6 @@
 // Written in the D programming language.
 
-module avocado.util;
+module arango.util;
 
 import std.array     : array;
 import std.algorithm : map, reduce;
@@ -183,8 +183,8 @@ T fromJSONValue(T)(ref const JSONValue value)
             typeMismatch("array");
         // Odd bug, following code causes compilation error
         // result = array(map!((a){ return fromJSONValue!(ElementType!T)(a); })(value.array));
-        // src/avocado/util.d(188): Error: cannot implicitly convert expression (array(map(value.array))) of type string[] to int[]
-        // src/avocado/util.d(258): Error: template instance avocado.util.fromJSONValue!(int[]) error instantiating
+        // src/arango/util.d(188): Error: cannot implicitly convert expression (array(map(value.array))) of type string[] to int[]
+        // src/arango/util.d(258): Error: template instance arango.util.fromJSONValue!(int[]) error instantiating
         result.reserve(value.array.length);
         foreach (elem; value.array)
             result ~= fromJSONValue!(ElementType!T)(elem);

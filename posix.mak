@@ -1,13 +1,13 @@
 # build mode: 32bit or 64bit
 ifeq (,$(MODEL))
-	MODEL := 32 # Why libavocadod.a with -m64 doesn't work on Mac?
+	MODEL := 32 # Why libarangod.a with -m64 doesn't work on Mac?
 endif
 
 ifeq (,$(DMD))
 	DMD := dmd
 endif
 
-LIB     = libavocadod.a
+LIB     = libarangod.a
 DFLAGS  = -Isrc -m$(MODEL) -w -d -property
 
 ifeq ($(BUILD),debug)
@@ -18,7 +18,7 @@ endif
 
 NAMES = database collection document query util
 FILES = $(addsuffix .d, $(NAMES))
-SRCS  = $(addprefix src/avocado/, $(FILES))
+SRCS  = $(addprefix src/arango/, $(FILES))
 
 # DDoc
 DOCS      = $(addsuffix .html, $(NAMES))
@@ -37,12 +37,12 @@ ddoc:
 clean:
 	rm $(addprefix $(DOCDIR)/, $(DOCS)) $(LIB)
 
-MAIN_FILE = "empty_avocado_unittest.d"
+MAIN_FILE = "empty_arango_unittest.d"
 
 # Why linking with -m64 fails on Mac?
 UNITTEST_DFLAGS = $(DFLAGS) -unittest -L-lcurl
 
 unittest:
-	echo 'import avocado.database; void main(){}' > $(MAIN_FILE)
+	echo 'import arango.database; void main(){}' > $(MAIN_FILE)
 	$(DMD) $(UNITTEST_DFLAGS) $(SRCS) -run $(MAIN_FILE)
 	rm $(MAIN_FILE)

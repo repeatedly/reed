@@ -1,4 +1,4 @@
-import avocado.database;
+import arango.database;
 
 import std.array;
 import std.algorithm;
