@@ -8,8 +8,9 @@ import arango.util;
 
 public
 {
-    import arango.query;
     import arango.document : Document, DocumentHandle;
+    import arango.index;
+    import arango.query;
 }
 
 private
@@ -318,6 +319,7 @@ class Collection
     // void deleteDocument(ref const DocumentHandle handle, ulong etag)
 
     mixin SimpleQueryAPIs;
+    mixin IndexAPIs;
 
   private:
     @safe

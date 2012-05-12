@@ -31,7 +31,8 @@ Currenlty, not fully implemented.
 
     1. <del>HTTP Interface for Collections</del>
 
-    2. HTTP Interface for Indexes
+    2. HTTP Interface for Indexes (60% done)
+      * "geo" and "cap" are not supported yet.
 
     3. HTTP Interface for Administration and Monitoring
 
