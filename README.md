@@ -3,13 +3,14 @@ arango-d-driver
 
 ArangoDB Driver for D
 
-Currenlty, not fully implemented.
+# Usage
+
+See example directory.
 
 # TODO
 
 * Rename project (ArangoDB related project derived from Avocado varieties)
 * Implement APIs (See Progress section)
-* Error handling
 * Using Robert's JSON module if compilation succeeded
 
 # Progress
