@@ -1,6 +1,6 @@
 # build mode: 32bit or 64bit
 ifeq (,$(MODEL))
-	MODEL := 32 # Why libarangod.a with -m64 doesn't work on Mac?
+	MODEL := 64
 endif
 
 ifeq (,$(DMD))
@@ -39,7 +39,6 @@ clean:
 
 MAIN_FILE = "empty_arango_unittest.d"
 
-# Why linking with -m64 fails on Mac?
 UNITTEST_DFLAGS = $(DFLAGS) -unittest -L-lcurl
 
 unittest:
