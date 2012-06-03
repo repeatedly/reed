@@ -73,7 +73,7 @@ void main()
     {
         assert(collection.length == uris.length);
         foreach (i, uri; array(sort(uris)))
-            check(i, DocumentHandle(uri["/document/".length..$]));
+            check(i, DocumentHandle(uri["/_api/document/".length..$]));
     }
 
     writeln("Update document");

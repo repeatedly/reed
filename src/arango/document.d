@@ -6,13 +6,14 @@ import std.conv     : to, text;
 import std.json     : JSONValue;
 import std.typecons : Tuple;
 
+import arango.database;
 import arango.util;
 
 version(unittest) import std.exception;
 
 package
 {
-    immutable DocumentAPIPath = "document";
+    immutable DocumentAPIPath = buildUriPath(Database.APIPrefix, "document");
 }
 
 struct Document(T)
@@ -167,7 +168,7 @@ string buildDocumentPath(ref const DocumentHandle handle)
 
 unittest
 {
-    assert(buildDocumentPath(DocumentHandle("123/456")) == "document/123/456");
+    assert(buildDocumentPath(DocumentHandle("123/456")) == "_api/document/123/456");
 
     assertThrown(buildDocumentPath(DocumentHandle("123")));
     assertThrown(buildDocumentPath(DocumentHandle("123/456/789")));

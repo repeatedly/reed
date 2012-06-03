@@ -23,11 +23,11 @@ void main()
     {
         import std.conv;
 
-        foreach (i; 0..100)
+        foreach (i; 0..10)
             collection.putDocument(["class": "a", "id": i.to!string()]);
-        foreach (i; 0..100)
+        foreach (i; 0..10)
             collection.putDocument(["class": "b", "id": i.to!string()]);
-        foreach (i; 0..100)
+        foreach (i; 0..10)
             collection.putDocument(["class": "c", "id": i.to!string()]);
     }
 
@@ -41,8 +41,8 @@ void main()
         {
             size_t i = 0;
             foreach (doc; cursor) i++;
-            assert(i == 300);
-            assertThrown!Exception(cursor.count);
+            assert(i == 30);
+            //assertThrown!Exception(cursor.count); See https://github.com/triAGENS/ArangoDB/issues/100
         }
 
         writeln("cursor with count");
@@ -50,7 +50,7 @@ void main()
         option.count = true;
         auto countedCursor = database.queryCursor(query, option);
         {
-            assert(countedCursor.count == 300);
+            assert(countedCursor.count == 30);
         }
 
         writeln("cursor with batchSize 10");
@@ -59,7 +59,7 @@ void main()
         {
             size_t i = 0;
             foreach (doc; batchedCursor) i++;
-            assert(i == 300);
+            assert(i == 30);
         }
     }
 

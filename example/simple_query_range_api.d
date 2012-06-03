@@ -48,20 +48,20 @@ void main()
         option.right = 20;
         auto cursor = collection.queryRange!Doc(option);
         {
-            size_t i = 0;
+            size_t i;
             foreach (doc; cursor) i++;
-            assert(i == 27);
+            assert(i == 30);
         }
 
         writeln("simple/range with closed");
-        option.left = 80;
-        option.right = 100;
+        option.left = 70;
+        option.right = 90;
         option.closed = true;
         auto closedCursor = collection.queryRange(option);
         {
-            size_t i = 0;
+            size_t i;
             foreach (doc; closedCursor) i++;
-            assert(i == 60);
+            assert(i == 63);
         }
     }
 
