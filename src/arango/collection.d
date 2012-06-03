@@ -318,7 +318,7 @@ class Collection
 
     // void deleteDocument(ref const DocumentHandle handle, ulong etag)
 
-    mixin SimpleQueryAPIs;
+    mixin QueryAPIs;
     mixin IndexAPIs;
 
   private:

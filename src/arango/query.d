@@ -17,7 +17,6 @@ package
 
 struct ByExampleOption
 {
-    string collection;
     Nullable!long skip;
     Nullable!long limit;
 }
@@ -111,7 +110,7 @@ struct Cursor(T)
     }
 }
 
-mixin template SimpleQueryAPIs()
+mixin template QueryAPIs()
 {
     /**
      * See_Also: http://www.arangodb.org/manuals/HttpCursor.html#HttpCursorHttp
@@ -131,10 +130,10 @@ mixin template SimpleQueryAPIs()
      * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleAll
      */
     @trusted
-    Cursor!(T) queryAll(T = JSONValue)(ref AllOption option = AllOption())
+    Cursor!(T) queryAll(T = JSONValue)(ref const AllOption option = AllOption())
     {
-        option.collection = name_;
-        const query = option.toJSONValue();
+        auto query = option.toJSONValue();
+        query.object["collection"] = name_.toJSONValue();
         const request = Connection.Request(Method.PUT, buildSimpleQueryPath("all"), query.toJSON());
         auto response = database_.sendRequest(request);
 
@@ -145,12 +144,11 @@ mixin template SimpleQueryAPIs()
      * See_Also: http://www.arangodb.org/manuals/OTWP.html#OTWPSimpleQueriesByExample
      */
     @trusted
-    Document!(T)[] queryByExample(T = JSONValue, S)(S example, ref ByExampleOption option = ByExampleOption())
+    Document!(T)[] queryByExample(T = JSONValue, S)(S example, ref const ByExampleOption option = ByExampleOption())
     {
-        option.collection = name_;
         auto query = option.toJSONValue();
+        query.object["collection"] = name_.toJSONValue();
         query.object["example"] = example.toJSONValue();
-
         const request = Connection.Request(Method.PUT, buildSimpleQueryPath("by-example"), query.toJSON());
         auto response = database_.sendRequest(request);
 
