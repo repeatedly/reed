@@ -114,7 +114,7 @@ mixin template SimpleQueryAPIs()
         const request = Connection.Request(Method.PUT, buildSimpleQueryPath("by-example"), query.toJSON());
         auto response = database_.sendRequest(request);
 
-        return response.toDocuments!T;
+        return response.object["result"].toDocuments!T;
     }
 
   private:
