@@ -24,7 +24,8 @@ See example directory.
 
 2. Light-Weight HTTP for Queries (Working)
 
-    1. HTTP Interface for Cursors (50% done)
+    1. HTTP Interface for Cursors (80% done)
+      * TODO: Implement AQL builder
 
     2. HTTP Interface for Simple Queries
 

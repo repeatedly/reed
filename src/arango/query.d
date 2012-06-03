@@ -24,6 +24,13 @@ struct ByExampleOption
 
 alias ByExampleOption AllOption;
 
+struct CursorOption
+{
+    Nullable!bool count;
+    Nullable!long batchSize;
+    //Nullable!(string[string]) bindVars; Manual does not describe an example
+}
+
 private
 {
     alias Connection.Method Method;
@@ -33,7 +40,8 @@ struct Cursor(T)
 {
   private:
     bool hasMore_;
-    ulong cursorId_;
+    long cursorId_;
+    Nullable!long count_;
     Document!(T)[] documents_;
 
     Database database_;
@@ -43,10 +51,28 @@ struct Cursor(T)
     {
         parseCursorResult(value);
         database_ = database;
+
+        if ("count" in value.object)
+            count_ = value.object["count"].integer;
     }
 
     @property @safe
     {
+        long id() const
+        {
+            return cursorId_;
+        }
+
+        long count() const
+        in
+        {
+            assert(count_, "Cannot call count on query without 'count' parameter");
+        }
+        body
+        {
+            return count_.get;
+        }
+
         nothrow bool empty() const
         {
             return documents_.empty;
@@ -88,6 +114,20 @@ struct Cursor(T)
 mixin template SimpleQueryAPIs()
 {
     /**
+     * See_Also: http://www.arangodb.org/manuals/HttpCursor.html#HttpCursorHttp
+     */
+    @trusted
+    Cursor!(T) queryCursor(T = JSONValue)(in string aqlQuery, ref const CursorOption option = CursorOption())
+    {
+        auto query = option.toJSONValue();
+        query.object["query"] = aqlQuery.toJSONValue();
+        const request = Connection.Request(Method.POST, CursorAPIPath, query.toJSON());
+        auto response = database_.sendRequest(request);
+
+        return typeof(return)(database_, response);
+    }
+
+    /**
      * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleAll
      */
     @trusted
@@ -119,7 +159,7 @@ mixin template SimpleQueryAPIs()
 
   private:
     @safe
-    static string buildSimpleQueryPath(string path) // pure
+    static string buildSimpleQueryPath(in string path) // pure
     {
         return buildUriPath(SimpleQueryAPIPath, path);
     }
@@ -135,7 +175,7 @@ mixin template SimpleQueryAPIs()
 package:
 
 @safe
-string buildCursorPath(ulong id) // pure
+string buildCursorPath(long id) // pure
 {
     return buildUriPath(CursorAPIPath, id);
 }
