@@ -16,7 +16,7 @@ else
 	DFLAGS += -O -release -nofloat -inline
 endif
 
-NAMES = database collection document query index util
+NAMES = database cursor collection document query index util
 FILES = $(addsuffix .d, $(NAMES))
 SRCS  = $(addprefix src/arango/, $(FILES))
 
