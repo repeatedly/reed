@@ -97,5 +97,15 @@ void main()
         }
     }
 
+    {
+        immutable classes = ["a", "b", "c"];
+
+        writeln("simple/first-example for class");
+        foreach (cls; classes) {
+            auto result = collection.queryFirstExample(["class": cls]);
+            assert(result.object["class"].str == cls);
+        }
+    }
+
     cleanupCollections();
 }

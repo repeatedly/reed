@@ -43,10 +43,14 @@ See example directory.
         1. <del>all</del>
 
         2. <del>by-example</del>
-        
-        3. near
 
-        4. within
+        3. <del>first-example</del>
+
+        4. range
+
+        5. near
+
+        6. within
 
     5. REST Interface for storing key-value pairs
 

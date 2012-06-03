@@ -155,6 +155,25 @@ mixin template QueryAPIs()
         return response.object["result"].toDocuments!T;
     }
 
+    /**
+     * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleFirstExample
+     */
+    @trusted
+    Document!(T) queryFirstExample(T = JSONValue, S)(S example)
+    {
+        static struct Query
+        {
+            string collection;
+            const string[string] example;
+        }
+
+        auto query = Query(name_, example).toJSONValue();
+        const request = Connection.Request(Method.PUT, buildSimpleQueryPath("first-example"), query.toJSON());
+        auto response = database_.sendRequest(request);
+
+        return response.object["document"].toDocument!T;
+    }
+
   private:
     @safe
     static string buildSimpleQueryPath(in string path) // pure
