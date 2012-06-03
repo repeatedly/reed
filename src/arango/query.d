@@ -19,6 +19,17 @@ package
     immutable SimpleQueryAPIPath = buildUriPath(Database.APIPrefix, "simple");
 }
 
+private
+{
+    alias Connection.Method Method;
+
+    mixin template OptionFields()
+    {
+        Nullable!long skip;
+        Nullable!long limit;
+    }
+}
+
 struct ByExampleOption
 {
     Nullable!long skip;
@@ -27,9 +38,13 @@ struct ByExampleOption
 
 alias ByExampleOption AllOption;
 
-private
+struct RangeOption
 {
-    alias Connection.Method Method;
+    string attribute;
+    long left;
+    long right;
+    Nullable!bool closed;
+    mixin OptionFields;
 }
 
 mixin template SimpleQueryAPIs()
@@ -80,6 +95,20 @@ mixin template SimpleQueryAPIs()
         auto response = database_.sendRequest(request);
 
         return response.object["document"].toDocument!T;
+    }
+
+    /**
+     * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleRange
+     */
+    @trusted
+    Cursor!(T) queryRange(T = JSONValue)(ref const RangeOption option)
+    {
+        auto query = option.toJSONValue();
+        query.object["collection"] = name_.toJSONValue();
+        const request = Connection.Request(Method.PUT, buildSimpleQueryPath("range"), query.toJSON());
+        auto response = database_.sendRequest(request);
+
+        return typeof(return)(database_, response);
     }
 
   private:
