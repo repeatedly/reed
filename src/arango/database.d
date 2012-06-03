@@ -159,6 +159,8 @@ class Database
         return new typeof(return)(cast()this, response);
     }
 
+    mixin CursorAPIs;
+
     // TODO: Clean up
     @safe
     JSONValue sendRequest(ref const Connection.Request request)

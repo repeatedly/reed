@@ -152,6 +152,13 @@ unittest
     assert(extractDocumentHandle(value) == DocumentHandle("123/456", 789));
 }
 
+@trusted
+Document!(T)[] toDocuments(T)(ref JSONValue response)
+{
+    import std.algorithm : map;
+    return array(map!(toDocument!T)(response.array));
+}
+
 @safe
 string buildDocumentPath(ref const DocumentHandle handle)
 {

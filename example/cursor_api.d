@@ -37,7 +37,7 @@ void main()
     string query = "FOR u IN sample_collection RETURN u";
     {
         writeln("cursor");
-        auto cursor = collection.queryCursor(query);
+        auto cursor = database.queryCursor(query);
         {
             size_t i = 0;
             foreach (doc; cursor) i++;
@@ -48,14 +48,14 @@ void main()
         writeln("cursor with count");
         CursorOption option;
         option.count = true;
-        auto countedCursor = collection.queryCursor(query, option);
+        auto countedCursor = database.queryCursor(query, option);
         {
             assert(countedCursor.count == 300);
         }
 
         writeln("cursor with batchSize 10");
         option.batchSize = 10;
-        auto batchedCursor = collection.queryCursor(query, option);
+        auto batchedCursor = database.queryCursor(query, option);
         {
             size_t i = 0;
             foreach (doc; batchedCursor) i++;
