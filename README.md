@@ -1,7 +1,9 @@
-arango-d-driver
+Reed
 ================
 
-ArangoDB Driver for D
+ArangoDB Driver for D.
+
+Reed derived from [Avocado varieties](http://ucavo.ucr.edu/avocadovarieties/VarietyList/Reed.html).
 
 # Usage
 
@@ -9,7 +11,6 @@ See example directory.
 
 # TODO
 
-* Rename project (ArangoDB related project derived from Avocado varieties)
 * Implement APIs (See Progress section)
 * Using Robert's JSON module if compilation succeeded
 
