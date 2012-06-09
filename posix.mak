@@ -7,7 +7,7 @@ ifeq (,$(DMD))
 	DMD := dmd
 endif
 
-LIB     = libarangod.a
+LIB     = libreedd.a
 DFLAGS  = -Isrc -m$(MODEL) -w -d -property
 
 ifeq ($(BUILD),debug)
@@ -18,7 +18,7 @@ endif
 
 NAMES = database cursor collection document query index util
 FILES = $(addsuffix .d, $(NAMES))
-SRCS  = $(addprefix src/arango/, $(FILES))
+SRCS  = $(addprefix src/reed/, $(FILES))
 
 # DDoc
 DOCS      = $(addsuffix .html, $(NAMES))
@@ -37,11 +37,14 @@ ddoc:
 clean:
 	rm $(addprefix $(DOCDIR)/, $(DOCS)) $(LIB)
 
-MAIN_FILE = "empty_arango_unittest.d"
+MAIN_FILE = "empty_reed_unittest.d"
 
 UNITTEST_DFLAGS = $(DFLAGS) -unittest -L-lcurl
 
 unittest:
-	echo 'import arango.database; void main(){}' > $(MAIN_FILE)
+	echo 'import reed.database; void main(){}' > $(MAIN_FILE)
 	$(DMD) $(UNITTEST_DFLAGS) $(SRCS) -run $(MAIN_FILE)
 	rm $(MAIN_FILE)
+
+run_examples:
+	echo example/* | xargs -n 1 dmd src/reed/*.d -Isrc -L-lcurl -run
