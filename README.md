@@ -1,9 +1,9 @@
-Reed
+ReeD
 ================
 
 ArangoDB Driver for D.
 
-Reed derived from [Avocado varieties](http://ucavo.ucr.edu/avocadovarieties/VarietyList/Reed.html).
+ReeD derived from [Avocado varieties](http://ucavo.ucr.edu/avocadovarieties/VarietyList/Reed.html).
 
 # Usage
 
@@ -25,7 +25,7 @@ See example directory.
 
 2. Light-Weight HTTP for Queries (Working)
 
-    1. HTTP Interface for Cursors (80% done)
+    1. <del>HTTP Interface for Cursors</del>
       * TODO: Implement AQL builder
 
     2. HTTP Interface for Simple Queries
@@ -47,7 +47,7 @@ See example directory.
 
         3. <del>first-example</del>
 
-        4. range
+        4. <del>range</del>
 
         5. near
 
@@ -59,7 +59,7 @@ See example directory.
 
 * [ArangoDB - the universal nosql database](http://www.arangodb.org/)
 
-* [ArangoDB's Github](https://github.com/triAGENS/AvocadoDB)
+* [ArangoDB's Github](https://github.com/triAGENS/ArangoDB)
 
 # Copyright
 
