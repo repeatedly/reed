@@ -30,14 +30,30 @@ private
     }
 }
 
+/**
+ * Optional:
+ *  - skip
+ *  - limit
+ */
 struct ByExampleOption
 {
-    Nullable!long skip;
-    Nullable!long limit;
+    mixin OptionFields;
 }
 
+/// ditto
 alias ByExampleOption AllOption;
 
+/**
+ * Required:
+ *  - attribute
+ *  - left
+ *  - right
+ *
+ * Optional:
+ *  - skip
+ *  - limit
+ *  - closed
+ */
 struct RangeOption
 {
     string attribute;
@@ -52,7 +68,7 @@ mixin template SimpleQueryAPIs()
     @trusted
     {
         /**
-         * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleAll
+         * See_Also: http://www.arangodb.org/manuals/current/HttpSimple.html#HttpSimpleAll
          */
         Cursor!(T) queryAll(T = JSONValue)(const AllOption option = AllOption())
         {
@@ -74,7 +90,7 @@ mixin template SimpleQueryAPIs()
     @trusted
     {
         /**
-         * See_Also: http://www.arangodb.org/manuals/OTWP.html#OTWPSimpleQueriesByExample
+         * See_Also: http://www.arangodb.org/manuals/current/OTWP.html#OTWPSimpleQueriesByExample
          */
         Document!(T)[] queryByExample(T = JSONValue, S)(S example, const ByExampleOption option = ByExampleOption())
         {
@@ -95,7 +111,7 @@ mixin template SimpleQueryAPIs()
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleFirstExample
+     * See_Also: http://www.arangodb.org/manuals/current/HttpSimple.html#HttpSimpleFirstExample
      */
     @trusted
     Document!(T) queryFirstExample(T = JSONValue, S)(S example)
@@ -114,7 +130,7 @@ mixin template SimpleQueryAPIs()
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleRange
+     * See_Also: http://www.arangodb.org/manuals/current/HttpSimple.html#HttpSimpleRange
      */
     @trusted
     Cursor!(T) queryRange(T = JSONValue)(ref const RangeOption option)

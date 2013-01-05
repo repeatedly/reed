@@ -19,6 +19,9 @@ private
     alias Connection.Method Method;
 }
 
+/**
+ * See: http://www.arangodb.org/manuals/current/HttpCollection.html
+ */
 class Collection
 {
   public:
@@ -88,7 +91,7 @@ class Collection
         }
 
         /**
-         * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionRename
+         * See_Also: http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionRename
          */
         void name(string newName)
         {
@@ -100,7 +103,7 @@ class Collection
         }
 
         /**
-         * See_Also: size of http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionRead
+         * See_Also: size of http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionRead
          */
         @trusted
         size_t length() const
@@ -112,7 +115,7 @@ class Collection
         }
 
         /**
-         * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionProperties
+         * See_Also: http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionProperties
          */
         void waitForSync(bool newWaitForSync)
         {
@@ -122,7 +125,7 @@ class Collection
         }
 
         /**
-         * See_Also: properties of http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionRead
+         * See_Also: properties of http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionRead
          */
         Property property() const
         {
@@ -133,7 +136,7 @@ class Collection
         }
 
         /**
-         * See_Also: figures of http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionRead
+         * See_Also: figures of http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionRead
          */
         Figure figure() const
         {
@@ -147,7 +150,7 @@ class Collection
     @property @safe nothrow const
     {
         /**
-         * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionReading
+         * See_Also: http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionReading
          */
         bool isNewBorned()
         {
@@ -182,7 +185,7 @@ class Collection
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionLoad
+     * See_Also: http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionLoad
      */
     @safe
     void load()
@@ -193,7 +196,7 @@ class Collection
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionUnload
+     * See_Also: http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionUnload
      */
     @safe
     void unload()
@@ -204,7 +207,7 @@ class Collection
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionTruncate
+     * See_Also: http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionTruncate
      */
     @safe
     void truncate()
@@ -216,7 +219,7 @@ class Collection
     /// Document APIs
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/RestDocument.html#RestDocumentCreate
+     * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentCreate
      */
     @safe
     Document!T getDocument(T = JSONValue)(ulong revision) const
@@ -240,7 +243,7 @@ class Collection
     // T getDocument(T = JSONValue)(ref const DocumentHandle handle, ulong etag, bool match = true) const
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/RestDocument.html#RestDocumentReadAll
+     * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentReadAll
      */
     @safe
     string[] getDocumentURIs() const
@@ -258,7 +261,7 @@ class Collection
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/RestDocument.html#RestDocumentCreate
+     * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentCreate
      */
     @safe
     DocumentHandle putDocument(T)(auto ref const T document)
@@ -277,7 +280,7 @@ class Collection
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/RestDocument.html#RestDocumentUpdate
+     * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentUpdate
      */
     @safe
     DocumentHandle updateDocument(T)(ulong revision, auto ref const T document)
@@ -298,13 +301,13 @@ class Collection
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/RestDocument.html#RestDocumentHead
+     * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentHead
      * Issue: http://d.puremagic.com/issues/show_bug.cgi?id=8048
      */
     // bool checkDocument(ref const DocumentHandle handle) nothrow
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/RestDocument.html#RestDocumentDelete
+     * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentDelete
      */
     @safe
     void deleteDocument(ulong revision)
@@ -329,7 +332,7 @@ class Collection
 
   private:
     @safe
-    string buildOwnPath(string path) const
+    string buildOwnPath(in string path) const
     {
         return buildUriPath(APIPath, id_, path);
     }

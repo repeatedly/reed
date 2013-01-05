@@ -26,6 +26,9 @@ private
     alias Connection.Method Method;
 }
 
+/**
+ * See: http://www.arangodb.org/manuals/current/HttpCursor.html#HttpCursorHttp
+ */
 struct Cursor(T)
 {
   private:
@@ -54,12 +57,8 @@ struct Cursor(T)
         }
 
         long count() const
-        in
         {
             assert(count_, "Cannot call count on query without 'count' parameter");
-        }
-        body
-        {
             return count_.get;
         }
 
@@ -103,16 +102,17 @@ struct Cursor(T)
 
 mixin template CursorAPIs()
 {
-    /**
-     * See_Also: http://www.arangodb.org/manuals/HttpCursor.html#HttpCursorHttp
-     */
     @trusted
     {
+        /**
+         * See_Also: http://www.arangodb.org/manuals/current/HttpCursor.html#HttpCursorHttp
+         */
         Cursor!(T) queryCursor(T = JSONValue)(in string aqlQuery, const CursorOption option = CursorOption())
         {
             return queryCursor(aqlQuery, option);
         }
 
+        /// ditto
         Cursor!(T) queryCursor(T = JSONValue)(in string aqlQuery, ref const CursorOption option)
         {
             auto query = option.toJSONValue();
