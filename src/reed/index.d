@@ -28,12 +28,14 @@ struct Index
     mixin IndexFields;
 }
 
+///
 struct HashIndex
 {
     mixin IndexFields;
     bool unique;
 }
 
+///
 struct HashIndexOption
 {
     string[] fields;
@@ -41,12 +43,14 @@ struct HashIndexOption
     string type = "hash";  // ugly! See http://d.puremagic.com/issues/show_bug.cgi?id=3449#c13
 }
 
+///
 struct SkipListIndex
 {
     mixin IndexFields;
     bool unique;
 }
 
+///
 struct SkipListIndexOption
 {
     string[] fields;
@@ -57,7 +61,7 @@ struct SkipListIndexOption
 mixin template IndexAPIs()
 {
     /**
-     * See_Also: http://www.arangodb.org/manuals/HttpIndex.html#HttpIndexReadAll
+     * See_Also: http://www.arangodb.org/manuals/current/HttpIndex.html#HttpIndexReadAll
      */
     @property @safe
     Index[] indexes() const
@@ -69,7 +73,7 @@ mixin template IndexAPIs()
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/HttpIndex.html#HttpIndexRead
+     * See_Also: http://www.arangodb.org/manuals/current/HttpIndex.html#HttpIndexRead
      */
     @safe
     T getIndex(T = Index)(in string id) const
@@ -81,7 +85,7 @@ mixin template IndexAPIs()
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/HttpIndex.html#HttpIndexCreate
+     * See_Also: http://www.arangodb.org/manuals/current/HttpIndex.html#HttpIndexCreate
      */
     @safe
     auto createIndex(T)(auto ref const T option)
@@ -101,7 +105,7 @@ mixin template IndexAPIs()
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/HttpIndex.html#HttpIndexDelete
+     * See_Also: http://www.arangodb.org/manuals/current/HttpIndex.html#HttpIndexDelete
      */
     @safe
     void deleteIndex(in string id)
@@ -112,7 +116,7 @@ mixin template IndexAPIs()
 
   private:
     @safe
-    string buildIndexPath(string path) const
+    string buildIndexPath(in string path) const
     {
         return buildUriPath(IndexAPIPath, path);
     }

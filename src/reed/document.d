@@ -38,13 +38,9 @@ struct Document(T)
         bool opEquals(V)(ref const V other)
         {
             static if (is(V : Document))
-            {
                 return handle == other.handle && content == other.content;
-            }
             else
-            {
                 return content == other;
-            }
         }
     }
 }
