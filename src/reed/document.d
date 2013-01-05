@@ -16,37 +16,64 @@ package
     immutable DocumentAPIPath = buildUriPath(Database.APIPrefix, "document");
 }
 
+/**
+ * See: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentIntro
+ */
 struct Document(T)
 {
     DocumentHandle handle;
     T content;
-
     alias content this;
+
+    /*
+     * Why this opEquals needed?
+     */
+    @safe nothrow const
+    {
+        bool opEquals(V)(const V other)
+        {
+            return opEquals!T(other);
+        }
+
+        bool opEquals(V)(ref const V other)
+        {
+            static if (is(V : Document))
+            {
+                return handle == other.handle && content == other.content;
+            }
+            else
+            {
+                return content == other;
+            }
+        }
+    }
 }
 
 struct DocumentHandle
 {
-    static immutable Separator = '/';
+    static immutable dchar Separator = '/';
 
+    // This naming conversion for toJSONValue. ArangoDB's document handle has '_id' and '_rev' fields.
     string _id;
     ulong _rev;
 
     @trusted
+    static private Tuple!(ulong, ulong) parseId(string id)
     {
-        static private Tuple!(ulong, ulong) parseId(string id)
-        {
-            import std.string;
+        import std.string;
 
-            const pos = indexOf(id, Separator);
-            if (pos == -1)
-                throw new Exception("document-identifier must have '/'");
+        const pos = indexOf(id, Separator);
+        if (pos == -1)
+            throw new Exception("document-identifier must have '/'");
 
-            Tuple!(ulong, ulong) result;
-            result[0] = id[0..pos].to!ulong();
-            result[1] = id[pos + 1..$].to!ulong();
-            return result;
-        }
+        Tuple!(ulong, ulong) result;
+        result[0] = id[0..pos].to!ulong();
+        result[1] = id[pos + 1..$].to!ulong();
+        return result;
+    }
 
+    @safe
+    {
         this(string id, ulong rev)
         {
             parseId(id);
@@ -61,6 +88,7 @@ struct DocumentHandle
             _id = id;
         }
 
+        @trusted
         this(ulong collectionId, ulong rev)
         {
             _rev = rev;
@@ -91,10 +119,17 @@ struct DocumentHandle
         }
     }
 
-    @safe
-    bool opEquals(ref const DocumentHandle other)
+    @safe nothrow const
     {
-        return _id == other._id && _rev == other._rev;
+        bool opEquals(const DocumentHandle other)
+        {
+            return opEquals(other);
+        }
+
+        bool opEquals(ref const DocumentHandle other)
+        {
+            return _id == other._id && _rev == other._rev;
+        }
     }
 }
 
@@ -161,9 +196,16 @@ Document!(T)[] toDocuments(T)(ref JSONValue response)
 }
 
 @safe
-string buildDocumentPath(ref const DocumentHandle handle)
 {
-    return buildUriPath(DocumentAPIPath, handle.id);
+    string buildDocumentPath(const DocumentHandle handle)
+    {
+        return buildUriPath(DocumentAPIPath, handle.id);
+    }
+
+    string buildDocumentPath(ref const DocumentHandle handle)
+    {
+        return buildUriPath(DocumentAPIPath, handle.id);
+    }
 }
 
 unittest

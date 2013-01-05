@@ -49,33 +49,49 @@ struct RangeOption
 
 mixin template SimpleQueryAPIs()
 {
-    /**
-     * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleAll
-     */
     @trusted
-    Cursor!(T) queryAll(T = JSONValue)(ref const AllOption option = AllOption())
     {
-        auto query = option.toJSONValue();
-        query.object["collection"] = name_.toJSONValue();
-        const request = Connection.Request(Method.PUT, buildSimpleQueryPath("all"), query.toJSON());
-        auto response = database_.sendRequest(request);
+        /**
+         * See_Also: http://www.arangodb.org/manuals/HttpSimple.html#HttpSimpleAll
+         */
+        Cursor!(T) queryAll(T = JSONValue)(const AllOption option = AllOption())
+        {
+            return queryAll!T(option);
+        }
 
-        return typeof(return)(database_, response);
+        /// ditto
+        Cursor!(T) queryAll(T = JSONValue)(ref const AllOption option)
+        {
+            auto query = option.toJSONValue();
+            query.object["collection"] = name_.toJSONValue();
+            const request = Connection.Request(Method.PUT, buildSimpleQueryPath("all"), query.toJSON());
+            auto response = database_.sendRequest(request);
+
+            return typeof(return)(database_, response);
+        }
     }
 
-    /**
-     * See_Also: http://www.arangodb.org/manuals/OTWP.html#OTWPSimpleQueriesByExample
-     */
     @trusted
-    Document!(T)[] queryByExample(T = JSONValue, S)(S example, ref const ByExampleOption option = ByExampleOption())
     {
-        auto query = option.toJSONValue();
-        query.object["collection"] = name_.toJSONValue();
-        query.object["example"] = example.toJSONValue();
-        const request = Connection.Request(Method.PUT, buildSimpleQueryPath("by-example"), query.toJSON());
-        auto response = database_.sendRequest(request);
+        /**
+         * See_Also: http://www.arangodb.org/manuals/OTWP.html#OTWPSimpleQueriesByExample
+         */
+        Document!(T)[] queryByExample(T = JSONValue, S)(S example, const ByExampleOption option = ByExampleOption())
+        {
+            return queryByExample!T(example, option);
+        }
 
-        return response.object["result"].toDocuments!T;
+        /// ditto
+        Document!(T)[] queryByExample(T = JSONValue, S)(S example, ref const ByExampleOption option)
+        {
+            auto query = option.toJSONValue();
+            query.object["collection"] = name_.toJSONValue();
+            query.object["example"] = example.toJSONValue();
+            const request = Connection.Request(Method.PUT, buildSimpleQueryPath("by-example"), query.toJSON());
+            auto response = database_.sendRequest(request);
+
+            return response.object["result"].toDocuments!T;
+        }
     }
 
     /**

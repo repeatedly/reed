@@ -221,7 +221,10 @@ class Collection
     @safe
     Document!T getDocument(T = JSONValue)(ulong revision) const
     {
-        return getDocument(DocumentHandle(id_, revision));
+        const handle = DocumentHandle(id_, revision);
+        return getDocument(handle);
+        // I want to write following
+        //return getDocument(DocumentHandle(id_, revision));
     }
 
     /// ditto
@@ -279,7 +282,8 @@ class Collection
     @safe
     DocumentHandle updateDocument(T)(ulong revision, auto ref const T document)
     {
-        return updateDocument(DocumentHandle(id_, revision), document);
+        const handle = DocumentHandle(id_, revision);
+        return updateDocument(handle, document);
     }
 
     /// ditto
@@ -305,7 +309,8 @@ class Collection
     @safe
     void deleteDocument(ulong revision)
     {
-        return deleteDocument(DocumentHandle(id_, revision));
+        const handle = DocumentHandle(id_, revision);
+        deleteDocument(handle);
     }
 
     /// ditto

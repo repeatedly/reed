@@ -182,12 +182,12 @@ T fromJSONValue(T)(ref const JSONValue value)
         if (value.type != JSON_TYPE.ARRAY)
             typeMismatch("array");
         // Odd bug, following code causes compilation error
-        // result = array(map!((a){ return fromJSONValue!(ElementType!T)(a); })(value.array));
+        result = array(map!((a){ return fromJSONValue!(ElementType!T)(a); })(value.array));
         // src/reed/util.d(188): Error: cannot implicitly convert expression (array(map(value.array))) of type string[] to int[]
         // src/reed/util.d(258): Error: template instance reed.util.fromJSONValue!(int[]) error instantiating
-        result.reserve(value.array.length);
-        foreach (elem; value.array)
-            result ~= fromJSONValue!(ElementType!T)(elem);
+        //result.reserve(value.array.length);
+        //foreach (elem; value.array)
+        //    result ~= fromJSONValue!(ElementType!T)(elem);
     }
     else static if (isAssociativeArray!T)
     {

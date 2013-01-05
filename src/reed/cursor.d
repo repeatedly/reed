@@ -107,14 +107,21 @@ mixin template CursorAPIs()
      * See_Also: http://www.arangodb.org/manuals/HttpCursor.html#HttpCursorHttp
      */
     @trusted
-    Cursor!(T) queryCursor(T = JSONValue)(in string aqlQuery, ref const CursorOption option = CursorOption())
     {
-        auto query = option.toJSONValue();
-        query.object["query"] = aqlQuery.toJSONValue();
-        const request = Connection.Request(Method.POST, CursorAPIPath, query.toJSON());
-        auto response = sendRequest(request);
+        Cursor!(T) queryCursor(T = JSONValue)(in string aqlQuery, const CursorOption option = CursorOption())
+        {
+            return queryCursor(aqlQuery, option);
+        }
 
-        return typeof(return)(this, response);
+        Cursor!(T) queryCursor(T = JSONValue)(in string aqlQuery, ref const CursorOption option)
+        {
+            auto query = option.toJSONValue();
+            query.object["query"] = aqlQuery.toJSONValue();
+            const request = Connection.Request(Method.POST, CursorAPIPath, query.toJSON());
+            auto response = sendRequest(request);
+
+            return typeof(return)(this, response);
+        }
     }
 }
 

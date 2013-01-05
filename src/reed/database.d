@@ -55,7 +55,13 @@ class Database
 
   public:
     @safe
-    this(ref const Configuration config = Configuration())
+    this(const Configuration config = Configuration())
+    {
+        connection_ = new Connection(config.endpoint);
+    }
+
+    @safe
+    this(ref const Configuration config)
     {
         connection_ = new Connection(config.endpoint);
     }
@@ -109,17 +115,25 @@ class Database
         return fromJSONValue!DocumentHandle(response);
     }
 
-    /**
-     * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionCreate
-     */
     @safe
-    Collection createCollection(ref const CollectionProperty properties)
     {
-        const jsonified = properties.toJSONValue();
-        const request = Connection.Request(Method.POST, Collection.APIPath, jsonified.toJSON());
-        const response = sendRequest(request);
+        /**
+         * See_Also: http://www.arangodb.org/manuals/HttpCollection.html#HttpCollectionCreate
+         */
+        Collection createCollection(const CollectionProperty properties)
+        {
+            return createCollection(properties);
+        }
 
-        return new Collection(this, response);
+        /// ditto
+        Collection createCollection(ref const CollectionProperty properties)
+        {
+            const jsonified = properties.toJSONValue();
+            const request = Connection.Request(Method.POST, Collection.APIPath, jsonified.toJSON());
+            const response = sendRequest(request);
+
+            return new Collection(this, response);
+        }
     }
 
     /**
