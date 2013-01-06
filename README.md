@@ -14,9 +14,9 @@ See example directory.
 * Implement APIs (See Progress section)
 * Using Robert's JSON module if compilation succeeded
 
-# Progress
+# Progress (v1.1.x)
 
-* REST Interface (v1.1.x)
+* REST Interface
 
     * <del>REST Interface for Documents</del>
 
@@ -24,27 +24,15 @@ See example directory.
 
     * REST Interface for Edges
 
-* Light-Weight HTTP for Queries (Working)
+* Light-Weight HTTP for Queries and Cursors (Working)
 
-    * <del>HTTP Interface for Cursors</del>
+    * <del>HTTP Interface for AQL Query Cursors</del>
 
         * TODO: Implement AQL builder
 
+    * HTTP Interface for AQL Queries
+
     * HTTP Interface for Simple Queries
-
-* Light-Weight HTTP for Administration
-
-    * <del>HTTP Interface for Collections</del>
-
-    * HTTP Interface for Indexes (60% done)
-
-        * "geo" and "cap" are not supported yet.
-
-    * <del>HTTP Interface for Administration and Monitoring</del>
-
-    * <del>HTTP Interface for Miscellaneous functions</del>
-
-    * Simple Queries
 
         * <del>all</del>
 
@@ -58,7 +46,23 @@ See example directory.
 
         * within
 
-    * REST Interface for storing key-value pairs
+* Light-Weight HTTP for Administration
+
+    * <del>HTTP Interface for Collections</del>
+
+    * HTTP Interface for Indexes (60% done)
+
+        * "geo" and "cap" are not supported yet.
+
+    * <del>HTTP Interface for Administration and Monitoring</del>
+
+    * <del>HTTP Interface for Miscellaneous functions</del>
+
+* Interface for bulk imports
+
+* Interface for batch operations
+
+* REST Interface for storing key-value pairs
 
 # Link
 
