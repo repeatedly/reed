@@ -210,6 +210,8 @@ T fromJSONValue(T)(ref const JSONValue value)
     }
     else static if (isSomeString!T)
     {
+        if (value.type == JSON_TYPE.NULL)
+            return null;
         if (value.type != JSON_TYPE.STRING)
             typeMismatch("string");
         result = value.str.to!T();

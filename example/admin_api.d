@@ -10,6 +10,10 @@ void main()
 {
     auto database = new Database();
 
+    writeln("Server version: ", database.serverVersion);
+    writeln("Server time: ", database.serverTime);
+    writeln("echo response: ", database.echo());
+
     writeln("Get system status");
 
     auto status = database.status();

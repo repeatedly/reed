@@ -149,6 +149,17 @@ struct CurrentRequestStatistics
     Nullable!BytesDistribution bytesReceived;
 }
 
+struct EchoResult
+{
+    string user;
+    string path;
+    string prefix;
+    string[] suffix;
+    string requestType;
+    string[string] headers;
+    string[string] parameters;
+}
+
 mixin template AdminAPIs()
 {
   private:
@@ -179,12 +190,11 @@ mixin template AdminAPIs()
     }
 
   public:
-    @property
+    @property @safe
     {
         /**
          * See_Also: http://www.arangodb.org/manuals/current/HttpSystem.html#HttpSystemStatus
          */
-        @safe
         SystemStatus status() const
         {
             enum path = buildUriPath(AdminAPIPath, "status");
@@ -197,7 +207,6 @@ mixin template AdminAPIs()
         /**
          * See_Also: http://www.arangodb.org/manuals/current/HttpSystem.html#HttpSystemLog
          */
-        @safe
         LogEntries log(in string[string] params = null) const
         {
             enum path = buildUriPath(AdminAPIPath, "log");
@@ -218,5 +227,44 @@ mixin template AdminAPIs()
          */
         alias statisticsFunc!(RequestStatistics, "request-statistics") requestStatistics;
         alias currentStatisticsFunc!(CurrentRequestStatistics, "request-statistics") currentRequestStatistics;
+
+        /**
+         * See_Also: http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscVersion
+         */
+        string serverVersion() const
+        {
+            enum path = buildUriPath(AdminAPIPath, "version");
+            const req = Connection.Request(Method.GET, path);
+            const res = sendRequest(req);
+
+            return res.object["version"].str;
+        }
+
+        /**
+         * See_Also: http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscTime
+         */
+        real serverTime() const
+        {
+            enum path = buildUriPath(AdminAPIPath, "time");
+            const req = Connection.Request(Method.GET, path);
+            const res = sendRequest(req);
+
+            return res.object["time"].floating;
+        }
+
+    }
+
+    /**
+     * See_Also: http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscEcho
+     */
+    @safe
+    EchoResult echo() const
+    {
+        enum path = buildUriPath(AdminAPIPath, "echo");
+        const req = Connection.Request(Method.GET, path);
+        const res = sendRequest(req);
+
+        return fromJSONValue!EchoResult(res);
     }
 }
+
