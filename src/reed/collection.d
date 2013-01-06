@@ -225,7 +225,7 @@ class Collection
     Document!T getDocument(T = JSONValue)(ulong revision) const
     {
         const handle = DocumentHandle(id_, revision);
-        return getDocument(handle);
+        return getDocument!T(handle);
         // I want to write following
         //return getDocument(DocumentHandle(id_, revision));
     }
