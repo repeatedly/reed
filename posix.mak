@@ -16,7 +16,7 @@ else
 	DFLAGS += -O -release -nofloat -inline
 endif
 
-NAMES = database cursor collection document query index util
+NAMES = database cursor collection document query index admin util
 FILES = $(addsuffix .d, $(NAMES))
 SRCS  = $(addprefix src/reed/, $(FILES))
 
@@ -47,4 +47,4 @@ unittest:
 	rm $(MAIN_FILE)
 
 run_examples:
-	echo example/* | xargs -n 1 dmd src/reed/*.d -Isrc -L-lcurl -run
+	echo example/* | xargs -n 1 dmd src/reed/*.d -unittest -Isrc -L-lcurl -run

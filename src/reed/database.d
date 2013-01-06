@@ -7,12 +7,13 @@ import std.json     : parseJSON, JSONValue;
 import std.typecons : Nullable;
 import std.net.curl : get, put, post, del, HTTP;
 
-import reed.document;
 import reed.util;
 
 public
 {
+    import reed.admin;
     import reed.collection;
+    import reed.document;
 }
 
 private
@@ -36,18 +37,6 @@ class Database
         Nullable!bool isSystem;
         Nullable!bool waitForSync;
         Nullable!long journalSize;
-    }
-
-    static struct SystemStatus
-    {
-        // Why 'userTime' and 'systemTime' are null?
-        //size_t userTime;
-        //size_t systemTime;
-        size_t numberOfThreads;
-        size_t residentSize;
-        size_t virtualSize;
-        size_t minorPageFaults;
-        size_t majorPageFaults;
     }
 
   private:
@@ -81,18 +70,6 @@ class Database
                 result ~= new Collection(cast()this, collection);
 
             return cast(typeof(return))result;
-        }
-
-        /**
-         * See_Also: http://www.arangodb.org/manuals/current/HttpSystem.html#HttpSystemStatus
-         */
-        @safe
-        SystemStatus systemStatus() const
-        {
-            const request = Connection.Request(Method.GET, "_system/status");
-            const response = sendRequest(request);
-
-            return fromJSONValue!SystemStatus(response.object["system"]);
         }
     }
 
@@ -174,6 +151,7 @@ class Database
     }
 
     mixin CursorAPIs;
+    mixin AdminAPIs;
 
     // TODO: Clean up
     @safe
