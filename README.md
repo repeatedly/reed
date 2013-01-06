@@ -16,44 +16,49 @@ See example directory.
 
 # Progress
 
-1. REST Interface
+* REST Interface (v1.1.x)
 
-    1. <del>REST Interface for Documents</del>
-      * "etag" header is not supported yet.
+    * <del>REST Interface for Documents</del>
 
-    2. REST Interface for Edges
+        * "etag" header is not supported yet.
 
-2. Light-Weight HTTP for Queries (Working)
+    * REST Interface for Edges
 
-    1. <del>HTTP Interface for Cursors</del>
-      * TODO: Implement AQL builder
+* Light-Weight HTTP for Queries (Working)
 
-    2. HTTP Interface for Simple Queries
+    * <del>HTTP Interface for Cursors</del>
 
-3. Light-Weight HTTP for Administration
+        * TODO: Implement AQL builder
 
-    1. <del>HTTP Interface for Collections</del>
+    * HTTP Interface for Simple Queries
 
-    2. HTTP Interface for Indexes (60% done)
-      * "geo" and "cap" are not supported yet.
+* Light-Weight HTTP for Administration
 
-    3. HTTP Interface for Administration and Monitoring
+    * <del>HTTP Interface for Collections</del>
 
-    4. Simple Queries
+    * HTTP Interface for Indexes (60% done)
 
-        1. <del>all</del>
+        * "geo" and "cap" are not supported yet.
 
-        2. <del>by-example</del>
+    * <del>HTTP Interface for Administration and Monitoring</del>
 
-        3. <del>first-example</del>
+    * <del>HTTP Interface for Miscellaneous functions</del>
 
-        4. <del>range</del>
+    * Simple Queries
 
-        5. near
+        * <del>all</del>
 
-        6. within
+        * <del>by-example</del>
 
-    5. REST Interface for storing key-value pairs
+        * <del>first-example</del>
+
+        * <del>range</del>
+
+        * near
+
+        * within
+
+    * REST Interface for storing key-value pairs
 
 # Link
 
