@@ -7,6 +7,7 @@ import std.json     : parseJSON, JSONValue;
 import std.typecons : Nullable;
 import std.net.curl : get, put, post, del, HTTP;
 
+import reed.bulk_import;
 import reed.util;
 
 public
@@ -152,6 +153,7 @@ class Database
 
     mixin CursorAPIs;
     mixin AdminAPIs;
+    mixin BulkImportAPIs;
 
     // TODO: Clean up
     @safe

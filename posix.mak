@@ -16,7 +16,7 @@ else
 	DFLAGS += -O -release -nofloat -inline
 endif
 
-NAMES = database cursor collection document query index admin util
+NAMES = database cursor collection document query index admin bulk_import util
 FILES = $(addsuffix .d, $(NAMES))
 SRCS  = $(addprefix src/reed/, $(FILES))
 

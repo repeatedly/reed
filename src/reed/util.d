@@ -8,7 +8,7 @@ import std.conv      : to, text;
 import std.json;
 import std.range     : ElementType;
 import std.traits    : Unqual, isBoolean, isIntegral, isFloatingPoint, isSomeString, isArray, isAssociativeArray, ValueType;
-import std.typecons  : Nullable;
+import std.typecons  : Nullable, isTuple;
 
 @safe
 string buildUriPath(Paths...)(Paths paths)
@@ -63,9 +63,16 @@ unittest
 }
 
 @trusted
-string toJSON(ref const JSONValue value)
 {
-    return std.json.toJSON(&value);
+    string toJSON(const JSONValue value)
+    {
+        return toJSON(value);
+    }
+
+    string toJSON(ref const JSONValue value)
+    {
+        return std.json.toJSON(&value);
+    }
 }
 
 @trusted
@@ -102,6 +109,12 @@ JSONValue toJSONValue(T)(auto ref T value)
         result.type = JSON_TYPE.OBJECT;
         foreach (k, v; value)
             result.object[k] = v.toJSONValue();
+    }
+    else static if (isTuple!T)
+    {
+        result.type = JSON_TYPE.ARRAY;
+        foreach (i, Type; T.Types)
+            result.array ~= value[i].toJSONValue();
     }
     else static if (is(T == struct) || is(T == class))
     {

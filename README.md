@@ -58,7 +58,7 @@ See example directory.
 
     * <del>HTTP Interface for Miscellaneous functions</del>
 
-* Interface for bulk imports
+* <del>Interface for bulk imports</del>
 
 * Interface for batch operations
 
