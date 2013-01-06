@@ -39,6 +39,30 @@ unittest
 }
 
 @trusted
+string joinParameters(in string[string] params)
+{
+    import std.array : join;
+    import std.uri : encode;
+
+    if (params is null)
+        return null;
+
+    string[] queries;
+
+    foreach (k, v; params)
+        queries ~= k ~ "=" ~ encode(v);
+ 
+    return "?" ~ join(queries, "&");
+}
+
+unittest
+{
+    assert(joinParameters(null) == null);
+    assert(joinParameters(["granularity":"days"]) == "?granularity=days");
+    assert(joinParameters(["foo":"bar", "hoge":"fuga"]) == "?foo=bar&hoge=fuga");
+}
+
+@trusted
 string toJSON(ref const JSONValue value)
 {
     return std.json.toJSON(&value);
@@ -152,7 +176,11 @@ T fromJSONValue(T)(ref const JSONValue value)
 
     T result;
 
-    static if (isBoolean!T)
+    static if (is(Unqual!T U: Nullable!U))
+    {
+        result = fromJSONValue!U(value);
+    }
+    else static if (isBoolean!T)
     {
         if (value.type != JSON_TYPE.TRUE && value.type != JSON_TYPE.FALSE)
             typeMismatch("boolean");
@@ -166,10 +194,19 @@ T fromJSONValue(T)(ref const JSONValue value)
     }
     else static if (isFloatingPoint!T)
     {
-        // Should support integer to floating point?
-        if (value.type != JSON_TYPE.FLOAT)
+        switch (value.type) {
+        case JSON_TYPE.FLOAT:
+            result = value.floating.to!T();
+            break;
+        case JSON_TYPE.INTEGER:
+            result = value.integer.to!T();
+            break;
+        case JSON_TYPE.STRING: // for "INF"
+            result = value.str.to!T();
+            break;
+        default:
             typeMismatch("floating point");
-        result = value.floating.to!T();
+        }
     }
     else static if (isSomeString!T)
     {
@@ -206,8 +243,10 @@ T fromJSONValue(T)(ref const JSONValue value)
             result = new T();
         }
 
+        import std.stdio;
         foreach(i, ref v; result.tupleof) {
             auto field = getFieldName!(T, i) in value.object;
+            //writeln(getFieldName!(T, i));
             if (field)
                 v = fromJSONValue!(typeof(v))(*field);
         }
@@ -252,7 +291,7 @@ unittest
     {
         JSONValue jarr = parseJSON(`[1, 4, 9]`);
         assert(fromJSONValue!(int[])(jarr) == [1, 4, 9]);
-        //assert(fromJSONValue!(real[])(jarr) == [1f, 4f, 9f]);
+        assert(fromJSONValue!(real[])(jarr) == [1f, 4f, 9f]);
     }
     {
         static struct Handa
@@ -265,15 +304,25 @@ unittest
             ulong id;
             string name;
             double height;
-            AAA aaa;
+            Nullable!AAA aaa;
         }
 
-        JSONValue jstruct = parseJSON(`{"height":169.5,"id":2,"name":"shinobu","aaa":{"ok":true}}`);
-        auto handa = fromJSONValue!Handa(jstruct);
-        assert(handa.id == 2);
-        assert(handa.name == "shinobu");
-        assert(handa.height == 169.5f);
-        assert(handa.aaa.ok);
+        {
+            JSONValue jstruct = parseJSON(`{"height":169.5,"id":2,"name":"shinobu","aaa":{"ok":true}}`);
+            auto handa = fromJSONValue!Handa(jstruct);
+            assert(handa.id == 2);
+            assert(handa.name == "shinobu");
+            assert(handa.height == 169.5f);
+            assert(handa.aaa.ok);
+        }
+        {
+            JSONValue jstruct = parseJSON(`{"height":169.5,"id":2,"name":"shinobu"}`);
+            auto handa = fromJSONValue!Handa(jstruct);
+            assert(handa.id == 2);
+            assert(handa.name == "shinobu");
+            assert(handa.height == 169.5f);
+            assert(handa.aaa.isNull);
+        }
     }
     {
         static class Naito
