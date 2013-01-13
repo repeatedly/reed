@@ -258,10 +258,8 @@ T fromJSONValue(T)(ref const JSONValue value)
             result = new T();
         }
 
-        import std.stdio;
         foreach(i, ref v; result.tupleof) {
             auto field = getFieldName!(T, i) in value.object;
-            //writeln(getFieldName!(T, i));
             if (field)
                 v = fromJSONValue!(typeof(v))(*field);
         }
