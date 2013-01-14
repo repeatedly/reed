@@ -1,11 +1,6 @@
 # build mode: 32bit or 64bit
-ifeq (,$(MODEL))
-	MODEL := 64
-endif
-
-ifeq (,$(DMD))
-	DMD := dmd
-endif
+MODEL ?= $(shell getconf LONG_BIT)
+DMD ?= dmd
 
 LIB    = libreedd.a
 DFLAGS = -Isrc -m$(MODEL) -w -d -property
@@ -13,13 +8,7 @@ DFLAGS = -Isrc -m$(MODEL) -w -d -property
 ifeq ($(BUILD),debug)
 	DFLAGS += -g -debug
 else
-	DFLAGS += -O -release -nofloat -inline
-endif
-
-JSON ?= std
-
-ifeq ($(JSON),yajl)
-	DFLAGS += -L-lyajld -L-lyajl version=YAJL_JSON
+	DFLAGS += -O -release -nofloat -inline -noboundscheck
 endif
 
 NAMES = database cursor collection document query index admin bulk_import util
