@@ -7,13 +7,19 @@ ifeq (,$(DMD))
 	DMD := dmd
 endif
 
-LIB     = libreedd.a
-DFLAGS  = -Isrc -m$(MODEL) -w -d -property
+LIB    = libreedd.a
+DFLAGS = -Isrc -m$(MODEL) -w -d -property
 
 ifeq ($(BUILD),debug)
 	DFLAGS += -g -debug
 else
 	DFLAGS += -O -release -nofloat -inline
+endif
+
+JSON ?= std
+
+ifeq ($(JSON),yajl)
+	DFLAGS += -L-lyajld -L-lyajl version=YAJL_JSON
 endif
 
 NAMES = database cursor collection document query index admin bulk_import util
@@ -26,7 +32,7 @@ DOCDIR    = doc
 CANDYDOC  = $(addprefix doc/candydoc/, candy.ddoc modules.ddoc)
 DDOCFLAGS = -Dd$(DOCDIR) -c -o- -Isrc $(CANDYDOC)
 
-target: $(LIB) ddoc
+target: $(LIB)
 
 $(LIB):
 	$(DMD) $(DFLAGS) -lib -of$(LIB) $(SRCS)
