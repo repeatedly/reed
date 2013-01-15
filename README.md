@@ -12,7 +12,7 @@ See example directory.
 # TODO
 
 * Implement APIs (See Progress section)
-* Using Robert's JSON module if compilation succeeded
+* Using [yajl-d](https://github.com/repeatedly/yajl-d) or Robert's JSON module
 
 # Progress (v1.1.x)
 
