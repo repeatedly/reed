@@ -43,6 +43,13 @@ void main()
         assert(hash.isNewlyCreated);
     }
 
+    auto cap = collection.createIndex(CapIndexOption(10));
+    {
+        assert(cap.type == "cap");
+        assert(cap.size == 10);
+        assert(cap.isNewlyCreated);
+    }
+
     writeln("Create same index");
 
     skiplist = collection.createIndex(slOption);
@@ -57,18 +64,21 @@ void main()
 
     indexes = collection.indexes;
     {
-        assert(indexes.length == 3);
+        assert(indexes.length == 4);
         foreach (index; indexes.filter!q{a.type != "primary"}) {
             auto got = collection.getIndex(index.id);
             assert(got.id == index.id);
             assert(got.type == index.type);
-            assert(got.fields == index.fields);
+            if (got.type == "cap")
+                assert(got.size == 10);
+            else
+                assert(got.fields == index.fields);
         }
     } 
 
     writeln("Delete indexes");
     {
-        assert(indexes.length == 3);
+        assert(indexes.length == 4);
         foreach (index; indexes.filter!q{a.type != "primary"}) // "primary" cannot be deleted
             collection.deleteIndex(index.id);
         assert(collection.indexes.length == 1);

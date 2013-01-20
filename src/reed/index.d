@@ -2,6 +2,8 @@
 
 module reed.index;
 
+import std.typecons : Nullable;
+
 import reed.database;
 import reed.util;
 
@@ -18,7 +20,6 @@ private
     {
         string id;
         string type;
-        string[] fields;
         bool isNewlyCreated;
     }
 }
@@ -26,12 +27,16 @@ private
 struct Index
 {
     mixin IndexFields;
+    // TODO: Changed to Nullable
+    string[] fields;
+    size_t size;
 }
 
 ///
 struct HashIndex
 {
     mixin IndexFields;
+    string[] fields;
     bool unique;
 }
 
@@ -47,6 +52,7 @@ struct HashIndexOption
 struct SkipListIndex
 {
     mixin IndexFields;
+    string[] fields;
     bool unique;
 }
 
@@ -56,6 +62,20 @@ struct SkipListIndexOption
     string[] fields;
     bool unique;
     string type = "skiplist";  // See HashIndexOption
+}
+
+///
+struct CapIndex
+{
+    mixin IndexFields;
+    size_t size;
+}
+
+///
+struct CapIndexOption
+{
+    size_t size;
+    string type = "cap";  // See HashIndexOption
 }
 
 mixin template IndexAPIs()
@@ -94,6 +114,8 @@ mixin template IndexAPIs()
             alias HashIndex ReturnType;
         else static if (is(T : SkipListIndexOption))
             alias SkipListIndex ReturnType;
+        else static if (is(T : CapIndexOption))
+            alias CapIndex ReturnType;
         else
             alias Index ReturnType;
 
