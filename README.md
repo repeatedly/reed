@@ -50,9 +50,9 @@ See example directory.
 
     * <del>HTTP Interface for Collections</del>
 
-    * HTTP Interface for Indexes (60% done)
+    * HTTP Interface for Indexes (80% done)
 
-        * "geo" and "cap" are not supported yet.
+        * "geo" is not supported yet.
 
     * <del>HTTP Interface for Administration and Monitoring</del>
 
