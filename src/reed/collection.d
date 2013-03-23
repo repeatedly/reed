@@ -292,15 +292,15 @@ class Collection
      * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentUpdate
      */
     @safe
-    DocumentHandle updateDocument(T)(string revision, auto ref const T document)
+    DocumentHandle replaceDocument(T)(string revision, auto ref const T document)
     {
         const handle = DocumentHandle.fromCollectionId(id_, revision);
-        return updateDocument(handle, document);
+        return replaceDocument(handle, document);
     }
 
     /// ditto
     @safe
-    DocumentHandle updateDocument(T)(ref const DocumentHandle handle, auto ref const T document)
+    DocumentHandle replaceDocument(T)(ref const DocumentHandle handle, auto ref const T document)
     {
         const jsonified = document.toJSONValue();
         const request = Connection.Request(Method.PUT, buildDocumentPath(handle), jsonified.toJSON());
@@ -308,6 +308,11 @@ class Collection
 
         return fromJSONValue!DocumentHandle(response);
     }
+
+    /**
+     * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentUpdate
+     */
+    // DocumentHandle updateDocument(T)(ref const DocumentHandle handle, auto ref const T document)
 
     /**
      * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentHead

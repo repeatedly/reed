@@ -76,13 +76,13 @@ void main()
             check(i, DocumentHandle(uri["/_api/document/".length..$]));
     }
 
-    writeln("Update document");
+    writeln("Replace document");
 
-    auto updatedDH = collection.updateDocument(firstDH, ["yes": false, "ok": true]);
+    auto replacedDH = collection.replaceDocument(firstDH, ["yes": false, "ok": true]);
     {
-        assert(updatedDH.id == firstDH.id);
-        assert(updatedDH.revision != firstDH.revision);
-        assert(collection.getDocument!(bool[string])(updatedDH) == ["yes": false, "ok": true]);
+        assert(replacedDH.id == firstDH.id);
+        assert(replacedDH.revision != firstDH.revision);
+        assert(collection.getDocument!(bool[string])(replacedDH) == ["yes": false, "ok": true]);
     }
 
     writeln("Delete documents");
