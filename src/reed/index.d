@@ -78,6 +78,22 @@ struct CapIndexOption
     string type = "cap";  // See HashIndexOption
 }
 
+///
+struct FulltextIndex
+{
+    mixin IndexFields;
+    string[] fields;
+    ulong minLength;
+}
+
+///
+struct FulltextIndexOption
+{
+    string[] fields;
+    ulong minLength;
+    string type = "fulltext";  // See HashIndexOption
+}
+
 mixin template IndexAPIs()
 {
     /**
@@ -116,6 +132,8 @@ mixin template IndexAPIs()
             alias SkipListIndex ReturnType;
         else static if (is(T : CapIndexOption))
             alias CapIndex ReturnType;
+        else static if (is(T : FulltextIndexOption))
+            alias FulltextIndex ReturnType;
         else
             alias Index ReturnType;
 

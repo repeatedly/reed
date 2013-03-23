@@ -50,6 +50,14 @@ void main()
         assert(cap.isNewlyCreated);
     }
 
+    auto fulltext = collection.createIndex(FulltextIndexOption(["text"]));
+    {
+        assert(fulltext.type == "fulltext");
+        assert(fulltext.fields == ["text"]);
+        assert(fulltext.minLength == 2);
+        assert(fulltext.isNewlyCreated);
+    }
+
     writeln("Create same index");
 
     skiplist = collection.createIndex(slOption);
@@ -64,7 +72,7 @@ void main()
 
     indexes = collection.indexes;
     {
-        assert(indexes.length == 4);
+        assert(indexes.length == 5);
         foreach (index; indexes.filter!q{a.type != "primary"}) {
             auto got = collection.getIndex(index.id);
             assert(got.id == index.id);
@@ -78,7 +86,7 @@ void main()
 
     writeln("Delete indexes");
     {
-        assert(indexes.length == 4);
+        assert(indexes.length == 5);
         foreach (index; indexes.filter!q{a.type != "primary"}) // "primary" cannot be deleted
             collection.deleteIndex(index.id);
         assert(collection.indexes.length == 1);

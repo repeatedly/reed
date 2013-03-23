@@ -63,6 +63,15 @@ struct RangeOption
     mixin OptionFields;
 }
 
+///
+struct FulltextOption
+{
+    string attribute;
+    string query;
+    Nullable!string index;
+    mixin OptionFields;
+}
+
 mixin template SimpleQueryAPIs()
 {
     @trusted
@@ -138,6 +147,20 @@ mixin template SimpleQueryAPIs()
         auto query = option.toJSONValue();
         query.object["collection"] = name_.toJSONValue();
         const request = Connection.Request(Method.PUT, buildSimpleQueryPath("range"), query.toJSON());
+        auto response = database_.sendRequest(request);
+
+        return typeof(return)(database_, response);
+    }
+
+    /**
+     * See_Also: http://www.arangodb.org/manuals/current/IndexFulltextHttp.html#IndexFulltextHttpFulltext
+     */
+    @trusted
+    Cursor!(T) queryFulltext(T = JSONValue)(ref const FulltextOption option)
+    {
+        auto query = option.toJSONValue();
+        query.object["collection"] = name_.toJSONValue();
+        const request = Connection.Request(Method.PUT, buildSimpleQueryPath("fulltext"), query.toJSON());
         auto response = database_.sendRequest(request);
 
         return typeof(return)(database_, response);
