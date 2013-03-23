@@ -36,6 +36,7 @@ class Database
     {
         string name;
         Nullable!bool isSystem;
+        Nullable!bool isVolatile;
         Nullable!bool waitForSync;
         Nullable!long journalSize;
     }

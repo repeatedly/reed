@@ -31,8 +31,25 @@ void main()
         assert(created.name == name);
         assert(created.length == 0);
         assert(created.isLoaded);
+        assert(!created.property.isVolatile);
         assert(created.property.waitForSync);
         assert(database.collections.length == 1);
+    }
+
+    immutable nameVolatile = "test_volatile";
+    writeln("Create '", nameVolatile, "' collection");
+
+    Database.CollectionProperty propertyVolatile;
+    propertyVolatile.name = nameVolatile;
+    propertyVolatile.isVolatile = true;
+    const volatiled = database.createCollection(propertyVolatile);
+    {
+        assert(volatiled.name == nameVolatile);
+        assert(volatiled.length == 0);
+        assert(volatiled.isLoaded);
+        assert(volatiled.property.isVolatile);
+        assert(!volatiled.property.waitForSync);
+        assert(database.collections.length == 2);
     }
 
     writeln("Get '", name, "' collection");
