@@ -14,13 +14,15 @@ See example directory.
 * Implement APIs (See Progress section)
 * Using [yajl-d](https://github.com/repeatedly/yajl-d) or Robert's JSON module
 
-# Progress (v1.1.x)
+# Progress (v1.2.x)
 
 * REST Interface
 
-    * <del>REST Interface for Documents</del>
+    * REST Interface for Documents
 
         * "etag" header is not supported yet.
+
+        * PATCH is not supported yet
 
     * REST Interface for Edges
 
@@ -40,11 +42,21 @@ See example directory.
 
         * <del>first-example</del>
 
+        * <del>any</del>
+
         * <del>range</del>
 
         * near
 
         * within
+
+        * <del>fulltext</del>
+
+        * remove-by-example
+
+        * replace-by-example
+
+        * update-by-example
 
 * Light-Weight HTTP for Administration
 
@@ -56,13 +68,15 @@ See example directory.
 
     * <del>HTTP Interface for Administration and Monitoring</del>
 
+    * HTTP Interface for User Management
+
     * <del>HTTP Interface for Miscellaneous functions</del>
+
+* HTTP Interface for Graphs
 
 * <del>Interface for bulk imports</del>
 
 * Interface for batch operations
-
-* REST Interface for storing key-value pairs
 
 # Link
 
