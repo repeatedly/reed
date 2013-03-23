@@ -51,44 +51,44 @@ struct DocumentHandle
 
     // This naming conversion for toJSONValue. ArangoDB's document handle has '_id' and '_rev' fields.
     string _id;
-    ulong _rev;
+    string _rev;
+    string _key;
 
     @trusted
-    static private Tuple!(ulong, ulong) parseId(string id)
+    static private Tuple!(string, string) parseId(string id)
     {
         import std.string;
+        import std.stdio;
 
         const pos = indexOf(id, Separator);
         if (pos == -1)
             throw new Exception("document-identifier must have '/'");
 
-        Tuple!(ulong, ulong) result;
-        result[0] = id[0..pos].to!ulong();
-        result[1] = id[pos + 1..$].to!ulong();
+        Tuple!(string, string) result;
+        result[0] = id[0..pos];
+        result[1] = id[pos + 1..$];
         return result;
+    }
+
+    @trusted
+    static DocumentHandle fromCollectionId(string collectionId, string rev)
+    {
+        return DocumentHandle(text(collectionId, Separator, rev), rev);
     }
 
     @safe
     {
-        this(string id, ulong rev)
+        this(string id, string rev)
         {
-            parseId(id);
-
-            _rev = rev;
             _id = id;
+            _rev = rev;
+            _key = parseId(id)[1]; // “_key” will automatically become part of a document’s “_id” value.
         }
 
         this(string id)
         {
-            _rev = parseId(id)[1];
             _id = id;
-        }
-
-        @trusted
-        this(ulong collectionId, ulong rev)
-        {
-            _rev = rev;
-            _id = text(collectionId, Separator, rev);
+            _rev = _key = parseId(id)[1];
         }
     }
 
@@ -104,12 +104,22 @@ struct DocumentHandle
             _id = newId;
         }
 
-        ulong revision() const
+        string key() const
+        {
+            return _key;
+        }
+
+        void key(string newKey)
+        {
+            _key = newKey;
+        }
+
+        string revision() const
         {
             return _rev;
         }
 
-        void revision(ulong newRevision)
+        void revision(string newRevision)
         {
             _rev = newRevision;
         }
@@ -132,19 +142,23 @@ struct DocumentHandle
 unittest
 {
     {
-        assert(DocumentHandle("123/456") == DocumentHandle(123, 456));
-        assert(DocumentHandle("123/456", 456) == DocumentHandle(123, 456));
+        assert(DocumentHandle("123/456") == DocumentHandle.fromCollectionId("123", "456"));
+        assert(DocumentHandle("123/456", "456") == DocumentHandle.fromCollectionId("123", "456"));
 
-        auto handle = DocumentHandle("123/456", 789);
+        auto handle = DocumentHandle("123/456", "789");
         assert(handle.id == "123/456");
-        assert(handle.revision == 789);
+        assert(handle.key == "456");
+        assert(handle.revision == "789");
+    }
+    { // allow name based _id since 1.2
+        auto handle = DocumentHandle("handa/shinobu");
+        assert(handle.id == "handa/shinobu");
+        assert(handle.key == "shinobu");
+        assert(handle.revision == "shinobu");
     }
     {
         assertThrown(DocumentHandle(""));
         assertThrown(DocumentHandle("handa"));
-        assertThrown(DocumentHandle("handa/shinobu"));
-        assertThrown(DocumentHandle("handa/456"));
-        assertThrown(DocumentHandle("123/shinobu"));
     }
 }
 
@@ -170,18 +184,25 @@ DocumentHandle extractDocumentHandle(ref JSONValue value)
     // TODO: check id and rev if needed
 
     auto id = value.object["_id"].str;
-    auto rev = value.object["_rev"].integer;
+    auto rev = value.object["_rev"].str;
 
     value.object.remove("_id");
     value.object.remove("_rev");
+    value.object.remove("_key");
 
     return DocumentHandle(id, rev);
 }
 
+@trusted
+void insertKey(ref JSONValue value, in string key)
+{
+    value.object["_key"] = key.toJSONValue();
+}
+
 unittest
 {
-    JSONValue value = std.json.parseJSON(`{"_id": "123/456", "_rev": 789}`);
-    assert(extractDocumentHandle(value) == DocumentHandle("123/456", 789));
+    JSONValue value = std.json.parseJSON(`{"_id": "123/456", "_rev": "789"}`);
+    assert(extractDocumentHandle(value) == DocumentHandle("123/456", "789"));
 }
 
 @trusted
@@ -209,5 +230,4 @@ unittest
     assert(buildDocumentPath(DocumentHandle("123/456")) == "_api/document/123/456");
 
     assertThrown(buildDocumentPath(DocumentHandle("123")));
-    assertThrown(buildDocumentPath(DocumentHandle("123/456/789")));
 }

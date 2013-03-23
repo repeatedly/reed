@@ -31,6 +31,7 @@ class Collection
     {
         long journalSize;
         bool waitForSync;
+        bool isVolatile;
     }
 
     static struct Figure
@@ -53,15 +54,21 @@ class Collection
             long count;
         }
 
+        static struct Shapes
+        {
+            long count;
+        }
+
         Alive alive;
         Dead dead;
         DataFiles dataFiles;
+        Shapes shapes;
     }
 
   private:
     Database database_;
     string name_;
-    ulong id_;
+    string id_;
     uint status_;
 
   public:
@@ -73,14 +80,14 @@ class Collection
         if ("name" in info.object)
             name_ = info.object["name"].str;
         if ("id" in info.object)
-            id_ = info.object["id"].integer;
+            id_ = info.object["id"].str;
         if ("status" in info.object)
             status_ = info.object["status"].integer.to!uint();
     }
 
     @property @safe
     {
-        nothrow ulong id() const
+        nothrow string id() const
         {
             return id_;
         }
@@ -222,9 +229,9 @@ class Collection
      * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentCreate
      */
     @safe
-    Document!T getDocument(T = JSONValue)(ulong revision) const
+    Document!T getDocument(T = JSONValue)(string revision) const
     {
-        const handle = DocumentHandle(id_, revision);
+        const handle = DocumentHandle.fromCollectionId(id_, revision);
         return getDocument!T(handle);
         // I want to write following
         //return getDocument(DocumentHandle(id_, revision));
@@ -264,7 +271,7 @@ class Collection
      * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentCreate
      */
     @safe
-    DocumentHandle putDocument(T)(auto ref const T document)
+    DocumentHandle putDocument(T)(auto ref const T document, in string key = null)
     {
         @trusted
         string buildPath()
@@ -272,7 +279,9 @@ class Collection
             return text(DocumentAPIPath, "?collection=", id_);
         }
 
-        const jsonified = document.toJSONValue();
+        auto jsonified = document.toJSONValue();
+        if (key !is null)
+            jsonified.insertKey(key);
         const request = Connection.Request(Method.POST, buildPath(), jsonified.toJSON());
         const response = database_.sendRequest(request);
 
@@ -283,9 +292,9 @@ class Collection
      * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentUpdate
      */
     @safe
-    DocumentHandle updateDocument(T)(ulong revision, auto ref const T document)
+    DocumentHandle updateDocument(T)(string revision, auto ref const T document)
     {
-        const handle = DocumentHandle(id_, revision);
+        const handle = DocumentHandle.fromCollectionId(id_, revision);
         return updateDocument(handle, document);
     }
 
@@ -310,9 +319,9 @@ class Collection
      * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentDelete
      */
     @safe
-    void deleteDocument(ulong revision)
+    void deleteDocument(string revision)
     {
-        const handle = DocumentHandle(id_, revision);
+        const handle = DocumentHandle.fromCollectionId(id_, revision);
         deleteDocument(handle);
     }
 

@@ -33,7 +33,7 @@ struct Cursor(T)
 {
   private:
     bool hasMore_;
-    long cursorId_;
+    string cursorId_;
     Nullable!long count_;
     Document!(T)[] documents_;
 
@@ -51,7 +51,7 @@ struct Cursor(T)
 
     @property @safe
     {
-        long id() const
+        string id() const
         {
             return cursorId_;
         }
@@ -94,7 +94,7 @@ struct Cursor(T)
     void parseCursorResult(ref JSONValue value)
     {
         if ("id" in value.object)
-            cursorId_ = value.object["id"].integer;
+            cursorId_ = value.object["id"].str;
         documents_ = value.object["result"].toDocuments!T;
         hasMore_ = value.object["hasMore"].type == std.json.JSON_TYPE.TRUE;
     }
@@ -128,7 +128,7 @@ mixin template CursorAPIs()
 package:
 
 @safe
-string buildCursorPath(long id) // pure
+string buildCursorPath(string id) // pure
 {
     return buildUriPath(CursorAPIPath, id);
 }

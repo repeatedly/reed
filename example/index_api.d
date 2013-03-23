@@ -19,7 +19,7 @@ void main()
     auto indexes = collection.indexes();
     {
         assert(indexes.length == 1);
-        assert(indexes[0].id == text(collection.id, "/", 0));
+        assert(indexes[0].id == text(collection.name, "/", 0));
         assert(indexes[0].type == "primary");
         assert(indexes[0].fields == ["_id"]);
     }

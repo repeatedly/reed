@@ -94,5 +94,13 @@ void main()
 
     assert(collection.length == 0);
 
+    // since ArangoDB 1.2
+
+    writeln("Put document with key");
+
+    auto keyedDH = collection.putDocument(["name": "shinobu"], "myKey");
+    assert(keyedDH.id == "test/myKey");
+    assert(keyedDH.key == "myKey");
+
     cleanupCollections();
 }
