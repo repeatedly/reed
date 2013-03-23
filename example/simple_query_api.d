@@ -107,5 +107,12 @@ void main()
         }
     }
 
+    {
+        writeln("simple/any");
+        auto result = collection.queryAny();
+        assert("class" in result.object);
+        assert("id" in result.object);
+    }
+
     cleanupCollections();
 }

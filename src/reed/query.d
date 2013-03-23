@@ -142,6 +142,19 @@ mixin template SimpleQueryAPIs()
      * See_Also: http://www.arangodb.org/manuals/current/HttpSimple.html#HttpSimpleRange
      */
     @trusted
+    T queryAny(T = JSONValue)()
+    {
+        const query = `{"collection":"` ~ name_ ~ `"}`;
+        const request = Connection.Request(Method.PUT, buildSimpleQueryPath("any"), query);
+        auto response = database_.sendRequest(request);
+
+        return toDocument!T(response.object["document"]);
+    }
+
+    /**
+     * See_Also: http://www.arangodb.org/manuals/current/HttpSimple.html#HttpSimpleRange
+     */
+    @trusted
     Cursor!(T) queryRange(T = JSONValue)(ref const RangeOption option)
     {
         auto query = option.toJSONValue();
