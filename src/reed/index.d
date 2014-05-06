@@ -74,8 +74,20 @@ struct CapIndex
 ///
 struct CapIndexOption
 {
-    size_t size;
+    Nullable!size_t size;
+    Nullable!size_t byteSize;
     string type = "cap";  // See HashIndexOption
+
+    this(size_t s)
+    {
+        size = s;
+    }
+
+    this(size_t s, size_t bs)
+    {
+        size = s;
+        byteSize = bs;
+    }
 }
 
 ///
@@ -90,7 +102,7 @@ struct FulltextIndex
 struct FulltextIndexOption
 {
     string[] fields;
-    ulong minLength;
+    Nullable!ulong minLength;
     string type = "fulltext";  // See HashIndexOption
 }
 
