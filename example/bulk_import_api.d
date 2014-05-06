@@ -15,10 +15,8 @@ struct Data
 void cleanupCollections()
 {
     auto database = new Database();
-    foreach (collection; database.collections) {
-        if (collection.name.front != '_')
-            database.deleteCollection(collection.name);
-    }
+    foreach (collection; database.collections(true))
+        database.deleteCollection(collection.name);
 }
 
 void main()

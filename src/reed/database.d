@@ -62,9 +62,15 @@ class Database
         /**
          * See_Also: http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionReadAll
          */
-        inout(Collection[]) collections() inout
+        inout(Collection[]) collections(bool excludeSystem = false) inout
         {
-            const request = Connection.Request(Method.GET, Collection.APIPath);
+            @trusted
+            string buildPath()
+            {
+                return text(Collection.APIPath, "?excludeSystem=", excludeSystem);
+            }
+
+            const request = Connection.Request(Method.GET, buildPath());
             const response = sendRequest(request);
 
             Collection[] result;

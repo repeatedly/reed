@@ -6,23 +6,19 @@ import std.stdio;
 void cleanupCollections()
 {
     auto database = new Database();
-    foreach (collection; database.collections) {
-        if (collection.name.front != '_')
-            database.deleteCollection(collection.name);
-    }
+    foreach (collection; database.collections(true))
+        database.deleteCollection(collection.name);
 }
 
 void main()
 {
     cleanupCollections();
 
-    immutable defaultCollectionNum = 4;
-
     Configuration config;
     auto database = new Database(config);
     {
         // _statistics, _trx, _users, _replication
-        assert(database.collections.length == defaultCollectionNum);
+        assert(database.collections(true).length == 0);
     }
 
     immutable name = "test_collection";
@@ -38,7 +34,7 @@ void main()
         assert(created.isLoaded);
         assert(!created.property.isVolatile);
         assert(created.property.waitForSync);
-        assert(database.collections.length == 1 + defaultCollectionNum);
+        assert(database.collections(true).length == 1);
     }
 
     immutable nameVolatile = "test_volatile";
@@ -54,7 +50,7 @@ void main()
         assert(volatiled.isLoaded);
         assert(volatiled.property.isVolatile);
         assert(!volatiled.property.waitForSync);
-        assert(database.collections.length == 2 + defaultCollectionNum);
+        assert(database.collections(true).length == 2);
     }
 
     writeln("Get '", name, "' collection");
