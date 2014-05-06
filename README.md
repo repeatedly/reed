@@ -9,74 +9,50 @@ ReeD derived from [Avocado varieties](http://ucavo.ucr.edu/avocadovarieties/Vari
 
 See example directory.
 
+# Progress (v2.0.x)
+
+## Supported
+
+* API
+
+    * Collections
+
+    * Bulk Imports
+
+    * Documents
+
+        * "etag" header is not supported yet
+
+        * PATCH is not supported yet
+
+    * Index
+
+        * geo is not supported yet
+
+    * AQL Query Cursors
+
+        * TODO: Implement AQL builder
+
+    * Simple Queries
+
+        * near, within, *-by-example, by-example-*, by-condition-* are not supported yet
+
+* Administration
+
+    * Monitoring
+
+    * Miscellaneous functions
+
+## Unsupported yet
+
+* Graph related APIs
+* Batch Request APIs
+* User Management APIs
+
 # TODO
 
 * Implement APIs (See Progress section)
 * Using [yajl-d](https://github.com/repeatedly/yajl-d) or Robert's JSON module
-
-# Progress (v1.2.x)
-
-* REST Interface
-
-    * REST Interface for Documents
-
-        * "etag" header is not supported yet.
-
-        * PATCH is not supported yet
-
-    * REST Interface for Edges
-
-* Light-Weight HTTP for Queries and Cursors (Working)
-
-    * <del>HTTP Interface for AQL Query Cursors</del>
-
-        * TODO: Implement AQL builder
-
-    * HTTP Interface for AQL Queries
-
-    * HTTP Interface for Simple Queries
-
-        * <del>all</del>
-
-        * <del>by-example</del>
-
-        * <del>first-example</del>
-
-        * <del>any</del>
-
-        * <del>range</del>
-
-        * near
-
-        * within
-
-        * <del>fulltext</del>
-
-        * remove-by-example
-
-        * replace-by-example
-
-        * update-by-example
-
-* Light-Weight HTTP for Administration
-
-    * <del>HTTP Interface for Collections</del>
-
-    * HTTP Interface for Indexes (80% done)
-
-        * "geo" is not supported yet.
-
-    * <del>HTTP Interface for Administration and Monitoring</del>
-
-    * HTTP Interface for User Management
-
-    * <del>HTTP Interface for Miscellaneous functions</del>
-
-* HTTP Interface for Graphs
-
-* <del>Interface for bulk imports</del>
-
-* Interface for batch operations
 
 # Link
 
