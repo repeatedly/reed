@@ -11,15 +11,64 @@ package
     immutable AdminAPIPath = "_admin";
 }
 
-struct SystemStatus
+struct Statistics
 {
-    real userTime;
-    real systemTime;
-    size_t numberOfThreads;
-    size_t residentSize;
-    size_t virtualSize;
-    size_t minorPageFaults;
-    size_t majorPageFaults;
+    static struct SystemInfo
+    {
+        real userTime;
+        real systemTime;
+        size_t numberOfThreads;
+        size_t residentSize;
+        real residentSizePercent;
+        size_t virtualSize;
+        size_t minorPageFaults;
+        size_t majorPageFaults;
+    }
+
+    static struct ClientInfo
+    {
+        static struct Distribution
+        {
+            real sum;
+            size_t count;
+            size_t[] counts;
+        }
+
+        size_t httpConnections;
+        Distribution connectionTime;
+        Distribution totalTime;
+        Distribution requestTime;
+        Distribution queueTime;
+        Distribution bytesSent;
+        Distribution bytesReceived;
+    }
+
+    static struct HTTPInfo
+    {
+        size_t requestsTotal;
+        size_t requestsAsync;
+        size_t requestsGet;
+        size_t requestsHead;
+        size_t requestsPost;
+        size_t requestsPut;
+        size_t requestsPatch;
+        size_t requestsDelete;
+        size_t requestsOptions;
+        size_t requestsOther;
+    }
+
+    static struct ServerInfo
+    {
+        real uptime;
+        size_t physicalMemory;
+    }
+
+    SystemInfo system;
+    ClientInfo client;
+    HTTPInfo http;
+    ServerInfo server;
+    bool error;
+    uint code;
 }
 
 struct LogEntries
@@ -29,124 +78,6 @@ struct LogEntries
     size_t[] timestamp;
     string[] text;
     size_t totalAmount;
-}
-
-struct ConnectionStatistics
-{
-    static struct Distribution
-    {
-        real[3] cuts;
-        size_t[] count;
-        real[] mean;
-        real[] min;
-        size_t[4][] distribution;
-    }
-
-    static struct HttpConnections
-    {
-        size_t[] count;
-        real[] perSecond;
-    }
-
-    size_t resolution;
-    size_t length;
-    size_t totalLength;
-    size_t[] start;
-    Nullable!HttpConnections httpConnections;
-    Nullable!Distribution httpDuration;
-}
-
-struct CurrentConnectionStatistics
-{
-    static struct Distribution
-    {
-        real[3] cuts;
-        size_t count;
-        real mean;
-        real min;
-        size_t[4] distribution;
-    }
-
-    static struct HttpConnections
-    {
-        size_t count;
-        real perSecond;
-    }
-
-    size_t resolution;
-    size_t start;
-    Nullable!HttpConnections httpConnections;
-    Nullable!Distribution httpDuration;
-}
-
-struct RequestStatistics
-{
-    mixin template DistributionFields()
-    {
-        size_t[] count;
-        real[] mean;
-        real[] min;
-    }
-
-    static struct TimeDistribution
-    {
-        mixin DistributionFields;
-
-        real[6] cuts;
-        size_t[7][] distribution;
-    }
-
-    static struct BytesDistribution
-    {
-        mixin DistributionFields;
-
-        real[5] cuts;
-        size_t[6][] distribution;
-    }
-
-    size_t resolution;
-    size_t length;
-    size_t totalLength;
-    size_t[] start;
-    Nullable!TimeDistribution totalTime;
-    Nullable!TimeDistribution queueTime;
-    Nullable!TimeDistribution requestTime;
-    Nullable!BytesDistribution bytesSent;
-    Nullable!BytesDistribution bytesReceived;
-}
-
-struct CurrentRequestStatistics
-{
-    mixin template DistributionFields()
-    {
-        size_t count;
-        real mean;
-        real min;
-    }
-
-    static struct TimeDistribution
-    {
-        mixin DistributionFields;
-
-        real[6] cuts;
-        size_t[7] distribution;
-    }
-
-    static struct BytesDistribution
-    {
-        mixin DistributionFields;
-
-        real[5] cuts;
-        size_t[6] distribution;
-    }
-
-    size_t resolution;
-    size_t length;
-    Nullable!TimeDistribution totalTime;
-    Nullable!TimeDistribution queueTime;
-    Nullable!TimeDistribution requestTime;
-    Nullable!BytesDistribution bytesSent;
-    Nullable!BytesDistribution bytesReceived;
 }
 
 struct EchoResult
@@ -162,46 +93,19 @@ struct EchoResult
 
 mixin template AdminAPIs()
 {
-  private:
-    @safe
-    Type statisticsFunc(Type, string apiPath)(in string[string] params = null) const
-    {
-        enum path = buildUriPath(AdminAPIPath, apiPath);
-        const req = Connection.Request(Method.GET, path ~ joinParameters(params));
-        const res = sendRequest(req);
-
-        return fromJSONValue!Type(res);
-    }
-
-    @safe
-    Type currentStatisticsFunc(Type, string apiPath)(in string[string] params = null) const
-    {
-        string[string] curParams = ["length":"current"];
-        foreach (k, ref v; params) {
-            if (k != "length")
-                curParams[k] = v;
-        }
-
-        enum path = buildUriPath(AdminAPIPath, apiPath);
-        const req = Connection.Request(Method.GET, path ~ joinParameters(curParams));
-        const res = sendRequest(req);
-
-        return fromJSONValue!Type(res);
-    }
-
   public:
-    @property @safe
+    @property @trusted
     {
         /**
-         * See_Also: http://www.arangodb.org/manuals/current/HttpSystem.html#HttpSystemStatus
+         * See_Also: https://www.arangodb.org/manuals/current/HttpSystem.html#HttpSystemAdminStatistics
          */
-        SystemStatus status() const
+        Statistics statistics() const
         {
-            enum path = buildUriPath(AdminAPIPath, "status");
+            enum path = buildUriPath(AdminAPIPath, "statistics");
             const req = Connection.Request(Method.GET, path);
             const res = sendRequest(req);
 
-            return fromJSONValue!SystemStatus(res.object["system"]);
+            return fromJSONValue!Statistics(res);
         }
 
         /**
@@ -217,19 +121,7 @@ mixin template AdminAPIs()
         }
 
         /**
-         * See_Also: http://www.arangodb.org/manuals/current/HttpSystem.html#HttpSystemConnectionStatistics
-         */
-        alias statisticsFunc!(ConnectionStatistics, "connection-statistics") connectionStatistics;
-        alias currentStatisticsFunc!(CurrentConnectionStatistics, "connection-statistics") currentConnectionStatistics;
-
-        /**
-         * See_Also: http://www.arangodb.org/manuals/current/HttpSystem.html#HttpSystemRequestStatistics
-         */
-        alias statisticsFunc!(RequestStatistics, "request-statistics") requestStatistics;
-        alias currentStatisticsFunc!(CurrentRequestStatistics, "request-statistics") currentRequestStatistics;
-
-        /**
-         * See_Also: http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscVersion
+         * See_Also: https://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscVersion
          */
         string serverVersion() const
         {
@@ -241,7 +133,7 @@ mixin template AdminAPIs()
         }
 
         /**
-         * See_Also: http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscTime
+         * See_Also: https://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscTime
          */
         real serverTime() const
         {
@@ -255,7 +147,7 @@ mixin template AdminAPIs()
     }
 
     /**
-     * See_Also: http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscEcho
+     * See_Also: https://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscEcho
      */
     @safe
     EchoResult echo() const
