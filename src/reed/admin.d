@@ -166,5 +166,27 @@ mixin template AdminAPIs()
 
         return fromJSONValue!EchoResult(res);
     }
+
+    /**
+     * See_Also: https://www.arangodb.org/manuals/current/HttpSystem.html#HttpSystemFlushServerModules
+     */
+    @safe
+    void flushModules()
+    {
+        enum path = buildUriPath(AdminAPIPath, "modules/flush");
+        const req = Connection.Request(Method.POST, path, "");
+        const res = sendRequest(req);
+    }
+
+    /**
+     * See_Also: https://www.arangodb.org/manuals/current/HttpSystem.html#HttpSystemRoutingReloads
+     */
+    @safe
+    void reloadRouting()
+    {
+        enum path = buildUriPath(AdminAPIPath, "routing/reload");
+        const req = Connection.Request(Method.POST, path, "");
+        const res = sendRequest(req);
+    }
 }
 

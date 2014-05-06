@@ -78,4 +78,10 @@ void main()
         assert(server.uptime > 0.0);
         assert(server.physicalMemory > 0);
     }
+
+    writeln("Call modules/flush");
+    database.flushModules();
+
+    writeln("Call routing/reload");
+    database.reloadRouting();
 }
