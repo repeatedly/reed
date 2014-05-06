@@ -114,5 +114,35 @@ void main()
         assert("id" in result.object);
     }
 
+    {
+        writeln("simple/first");
+        auto result = collection.firstN();
+        assert(result.length == 1);
+        assert(result[0].object["class"].str == "a");
+        assert(result[0].object["id"].str == "0");
+
+        auto results = collection.firstN(5);
+        assert(results.length == 5);
+        foreach (i; 0..5) {
+            assert(results[i].object["class"].str == "a");
+            assert(results[i].object["id"].str == i.to!string);
+        }
+    }
+
+    {
+        writeln("simple/last");
+        auto result = collection.lastN();
+        assert(result.length == 1);
+        assert(result[0].object["class"].str == "c");
+        assert(result[0].object["id"].str == "99");
+
+        auto results = collection.lastN(5);
+        assert(results.length == 5);
+        foreach (i; 0..5) {
+            assert(results[i].object["class"].str == "c");
+            assert(results[i].object["id"].str == (99 - i).to!string);
+        }
+    }
+
     cleanupCollections();
 }

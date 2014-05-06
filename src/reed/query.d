@@ -72,6 +72,7 @@ struct FulltextOption
     mixin OptionFields;
 }
 
+
 mixin template SimpleQueryAPIs()
 {
     @trusted
@@ -179,7 +180,40 @@ mixin template SimpleQueryAPIs()
         return typeof(return)(database_, response);
     }
 
+    /**
+     * See_Also: https://www.arangodb.org/manuals/current/HttpSimple.html#HttpSimpleFirst
+     */
+    @trusted
+    Document!(T)[] firstN(T = JSONValue)(size_t count = 1)
+    {
+        return getN!T("first", count);
+    }
+
+    /**
+     * See_Also: https://www.arangodb.org/manuals/current/HttpSimple.html#HttpSimpleLast
+     */
+    @trusted
+    Document!(T)[] lastN(T = JSONValue)(size_t count = 1)
+    {
+        return getN!T("last", count);
+    }
+
   private:
+    @trusted
+    Document!(T)[] getN(T = JSONValue)(string path, size_t count)
+    {
+        auto query = JSONValue(["collection" : name_]);
+        if (count > 1)
+            query.object["count"] = count.toJSONValue;
+        const request = Connection.Request(Method.PUT, buildSimpleQueryPath(path), query.toJSON());
+        auto response = database_.sendRequest(request);
+
+        if (count > 1)
+            return response.object["result"].toDocuments!T;
+        else
+            return [response.object["result"].toDocument!T];
+    }
+
     @safe
     static string buildSimpleQueryPath(in string path) // pure
     {
