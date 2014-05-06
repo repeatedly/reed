@@ -3,7 +3,7 @@ MODEL ?= $(shell getconf LONG_BIT)
 DMD ?= dmd
 
 LIB    = libreedd.a
-DFLAGS = -Isrc -m$(MODEL) -w -d -property
+DFLAGS = -Isrc -m$(MODEL) -w -d #-property # disable -property for compiling with phobos functions
 
 ifeq ($(BUILD),debug)
 	DFLAGS += -g -debug
