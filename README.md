@@ -47,7 +47,9 @@ See example directory.
 
 * Graph related APIs
 * Batch Request APIs
+* Async Job (Need to use own HTTP reqeust instead of std.net.curl.post)
 * User Management APIs
+* Endpoint APIs
 
 # TODO
 
