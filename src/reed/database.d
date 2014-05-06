@@ -25,6 +25,7 @@ private
 struct Configuration
 {
     Connection.Endpoint endpoint;
+    string database;
 }
 
 class Database
@@ -42,19 +43,20 @@ class Database
     }
 
   private:
+    string name_;
     Connection connection_;
 
   public:
     @safe
     this(const Configuration config = Configuration())
     {
-        connection_ = new Connection(config.endpoint);
+        connection_ = new Connection(config);
     }
 
     @safe
     this(ref const Configuration config)
     {
-        connection_ = new Connection(config.endpoint);
+        connection_ = new Connection(config);
     }
 
     @property
@@ -182,7 +184,6 @@ class Connection
     static struct Endpoint
     {
         string host = "127.0.0.1";
-        //string host = "0.0.0.0";
         ushort port = 8529;
     }
 
@@ -204,10 +205,13 @@ class Connection
 
   public:
     @trusted
-    this(ref const Endpoint endpoint)
+    this(ref const Configuration config)
     {
-        endpoint_ = endpoint;
-        baseUri_ = text("http://", endpoint_.host, ":", endpoint.port);
+        endpoint_ = config.endpoint;
+        if (config.database.empty)
+            baseUri_ = text("http://", endpoint_.host, ":", endpoint_.port);
+        else
+            baseUri_ = text("http://", endpoint_.host, ":", endpoint_.port, "/_db/", config.database);
     }
 
     @trusted
