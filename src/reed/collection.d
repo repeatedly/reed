@@ -25,7 +25,7 @@ private
 class Collection
 {
   public:
-    immutable APIPath = buildUriPath(Database.APIPrefix, "collection");
+    static immutable APIPath = buildUriPath(Database.APIPrefix, "collection");
 
     static struct Property
     {
@@ -73,7 +73,7 @@ class Collection
 
   public:
     @trusted
-    this(Database database, ref const JSONValue info)
+    this(inout Database database, ref const JSONValue info) inout
     {
         database_ = database;
 
@@ -145,6 +145,7 @@ class Collection
         /**
          * See_Also: figures of http://www.arangodb.org/manuals/current/HttpCollection.html#HttpCollectionRead
          */
+        @trusted
         Figure figure() const
         {
             const request = Connection.Request(Method.GET, buildOwnPath("figures"));
@@ -252,7 +253,7 @@ class Collection
     /**
      * See_Also: http://www.arangodb.org/manuals/current/RestDocument.html#RestDocumentReadAll
      */
-    @safe
+    @trusted
     string[] getDocumentURIs() const
     {
         @trusted

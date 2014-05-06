@@ -80,77 +80,54 @@ JSONValue toJSONValue(T)(auto ref T value)
 {
     JSONValue result;
 
-    static if (isBoolean!T)
+    static if (isTuple!T)
     {
-        result.type = value ? JSON_TYPE.TRUE : JSON_TYPE.FALSE;
-    }
-    else static if (isIntegral!T)
-    {
-        result.type = JSON_TYPE.INTEGER;
-        result.integer = value;
-    }
-    else static if (isFloatingPoint!T)
-    {
-        result.type = JSON_TYPE.FLOAT;
-        result.floating = value;
-    }
-    else static if (isSomeString!T)
-    {
-        result.type = JSON_TYPE.STRING;
-        result.str = text(value);
-    }
-    else static if (isArray!T)
-    {
-        result.type = JSON_TYPE.ARRAY;
-        result.array = array(map!((a){ return a.toJSONValue(); })(value));
-    }
-    else static if (isAssociativeArray!T)
-    {
-        result.type = JSON_TYPE.OBJECT;
-        foreach (k, v; value)
-            result.object[k] = v.toJSONValue();
-    }
-    else static if (isTuple!T)
-    {
-        result.type = JSON_TYPE.ARRAY;
+        JSONValue[] arr;
         foreach (i, Type; T.Types)
-            result.array ~= value[i].toJSONValue();
+            arr ~= value[i].toJSONValue();
+        result = arr;
     }
     else static if (is(T == struct) || is(T == class))
     {
         static if (is(T == class))
         {
             if (value is null) {
-                result.type = JSON_TYPE.NULL;
+                result = null;
                 return result;
             }
         }
 
-        result.type = JSON_TYPE.OBJECT;
+        JSONValue[string] obj;
         foreach(i, v; value.tupleof) {
             static if (isNullable!(typeof(v)))
             {
                 if (!v.isNull)
-                    result.object[getFieldName!(T, i)] = v.get.toJSONValue();
+                    obj[getFieldName!(T, i)] = v.get.toJSONValue();
             }
             else
             {
-                result.object[getFieldName!(T, i)] = v.toJSONValue();
+                obj[getFieldName!(T, i)] = v.toJSONValue();
             }
         }
+        result = obj;
+    }
+    else
+    {
+        result = value;
     }
 
     return result;
 }
 
 // from msgpack-d
-private template getFieldName(Type, size_t i)
+template getFieldName(Type, size_t i)
 {
-    static assert((is(Type == class) || is(Type == struct)), "Type must be class or struct: type = " ~ Type.stringof);
+    import std.conv : text;
+
+    static assert((is(Unqual!Type == class) || is(Unqual!Type == struct)), "Type must be class or struct: type = " ~ Type.stringof);
     static assert(i < Type.tupleof.length, text(Type.stringof, " has ", Type.tupleof.length, " attributes: given index = ", i));
 
-    // 3 means () + .
-    enum getFieldName = Type.tupleof[i].stringof[3 + Type.stringof.length..$];
+    enum getFieldName = __traits(identifier, Type.tupleof[i]);
 }
 
 template isNullable(T)
@@ -271,33 +248,25 @@ T fromJSONValue(T)(ref const JSONValue value)
 unittest
 {
     {
-        JSONValue jtrue;
-        jtrue.type = JSON_TYPE.TRUE;
+        JSONValue jtrue = true;
         assert(fromJSONValue!bool(jtrue));
     }
     {
-        JSONValue jfalse;
-        jfalse.type = JSON_TYPE.FALSE;
+        JSONValue jfalse = false;
         assert(!fromJSONValue!bool(jfalse));
     }
     {
-        JSONValue jint;
-        jint.type = JSON_TYPE.INTEGER;
-        jint.integer = int.max;
+        JSONValue jint = int.max;
         assert(fromJSONValue!int(jint) == int.max);
         assert(fromJSONValue!ulong(jint) == int.max);
     }
     {
-        JSONValue jfloat;
-        jfloat.type = JSON_TYPE.FLOAT;
-        jfloat.floating = 10.5f;
+        JSONValue jfloat = 10.5f;
         assert(fromJSONValue!double(jfloat) == 10.5f);
         assert(fromJSONValue!real(jfloat) == 10.5f);
     }
     {
-        JSONValue jstr;
-        jstr.type = JSON_TYPE.STRING;
-        jstr.str = "omoikane";
+        JSONValue jstr = "omoikane";
         assert(fromJSONValue!string(jstr) == "omoikane");
         assert(fromJSONValue!dstring(jstr) == "omoikane"d);
     }

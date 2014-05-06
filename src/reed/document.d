@@ -178,7 +178,7 @@ Document!T toDocument(T)(ref JSONValue value)
 
 package:
 
-@safe
+@trusted
 DocumentHandle extractDocumentHandle(ref JSONValue value)
 {
     // TODO: check id and rev if needed

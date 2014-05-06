@@ -99,7 +99,7 @@ mixin template IndexAPIs()
     /**
      * See_Also: http://www.arangodb.org/manuals/current/HttpIndex.html#HttpIndexReadAll
      */
-    @property @safe
+    @property @trusted
     Index[] indexes() const
     {
         const request = Connection.Request(Method.GET, buildIndexPath());

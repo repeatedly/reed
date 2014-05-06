@@ -30,7 +30,7 @@ struct Configuration
 class Database
 {
   public:
-    immutable APIPrefix = "_api";
+    static immutable APIPrefix = "_api";
 
     static struct CollectionProperty
     {
@@ -149,7 +149,7 @@ class Database
         const request = Connection.Request(Method.GET, buildUriPath(Collection.APIPath, name));
         const response = sendRequest(request);
 
-        return new typeof(return)(cast()this, response);
+        return new typeof(return)(this, response);
     }
 
     mixin CursorAPIs;
@@ -176,6 +176,7 @@ class Connection
     static struct Endpoint
     {
         string host = "127.0.0.1";
+        //string host = "0.0.0.0";
         ushort port = 8529;
     }
 
