@@ -6,8 +6,10 @@ import std.stdio;
 void cleanupCollections()
 {
     auto database = new Database();
-    foreach (collection; database.collections)
-        database.deleteCollection(collection.name);
+    foreach (collection; database.collections) {
+        if (collection.name.front != '_')
+            database.deleteCollection(collection.name);
+    }
 }
 
 void main()
@@ -52,6 +54,7 @@ void main()
 
     auto fulltext = collection.createIndex(FulltextIndexOption(["text"]));
     {
+        writeln(fulltext);
         assert(fulltext.type == "fulltext");
         assert(fulltext.fields == ["text"]);
         assert(fulltext.minLength == 2);

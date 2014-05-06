@@ -8,13 +8,17 @@ import std.stdio;
 void cleanupCollections()
 {
     auto database = new Database();
-    foreach (collection; database.collections)
-        database.deleteCollection(collection.name);
+    foreach (collection; database.collections) {
+        if (collection.name.front != '_')
+            database.deleteCollection(collection.name);
+    }
 }
 
 void main()
 {
     cleanupCollections();
+
+    immutable defaultCollectionNum = 4;
 
     immutable name = "test";
     writeln("Put new document with '", name, "' collection");
@@ -22,8 +26,9 @@ void main()
     auto database = new Database();
     auto firstDH = database.putDocument(name, ["yes": true]);
     {
-        assert(database.collections.length == 1);
-        assert(database.collections[0].name == name);
+        auto latestCollection = 1 + defaultCollectionNum;
+        assert(database.collections.length == latestCollection);
+        assert(database.collections.filter!(c => c.name.front != '_').front.name == name);
     }
 
     auto collection = database[name];
