@@ -12,6 +12,7 @@ void main()
 
     writeln("Server version: ", database.serverVersion);
     writeln("Server time: ", database.serverTime);
+    writeln("Server role: ", database.serverRole);
     writeln("echo response: ", database.echo());
 
     writeln("Get system logs");

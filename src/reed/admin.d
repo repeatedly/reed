@@ -144,6 +144,14 @@ mixin template AdminAPIs()
             return res.object["time"].floating;
         }
 
+        string serverRole() const
+        {
+            enum path = buildUriPath(AdminAPIPath, "server/role");
+            const req = Connection.Request(Method.GET, path);
+            const res = sendRequest(req);
+
+            return res.object["role"].str;
+        }
     }
 
     /**
